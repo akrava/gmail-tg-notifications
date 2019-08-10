@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            "@telegram/*":   [ "telegram/*"          ],
+            "@gmail/*":      [ "gmail/*"             ],
+            "@service/*":    [ "service/*"           ],
+            "@model/*":      [ "db/model/*"          ],
+            "@controller/*": [ "db/controller/*"     ],
+            "@commands/*":   [ "telegram/commands/*" ],
+        },
+        "module": "commonjs",
+        "target": "esnext",
+        "outDir": "build",
+        "rootDir": "src",
+        "noImplicitAny": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "compileOnSave": true
+}
