@@ -13,10 +13,11 @@ const connectionsOptions = {
 };
 
 Mongoose.connect(process.env.DB_URL, connectionsOptions)
+    .catch((err) => error("db", err))
     .then(() => info("db", "Opened connection with db"))
     .then(() => ServerApp.listen(process.env.PORT, () => info(
         "server", `Running on port ${process.env.PORT}`
     )))
     .catch((err) => error("server", err))
     .then(() => TelegramBot.launch())
-    .catch((err) => error("db", err));
+    .catch((err) => error("tg", err));
