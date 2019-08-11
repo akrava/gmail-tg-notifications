@@ -11,8 +11,3 @@ bot.telegram.setWebhook(path.join(process.env.SERVER_PATH, process.env.WEBHOOK_T
 app.use(Express.static("assets/secure"));
 app.use(Express.static("assets"));
 app.use(gmailRouter);
-
-app.use((req, res) => {
-    console.log("k");
-    res.status(204).send();
-});

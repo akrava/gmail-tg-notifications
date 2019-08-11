@@ -2,15 +2,17 @@ import * as mongoose from "mongoose";
 import { Schema, Document } from "mongoose";
 
 export interface IUser extends Document {
-    id: number;
-    firstName: string;
+    telegramID: number;
+    gmailID: number;
     chatsId: number[];
+    expire: Date;
 }
 
 const UserSchema: Schema = new Schema({
-    id: { type: Number, required: true, unique: true },
-    firstName: { type: String, required: true },
-    chatsId: { type: [Number], required: true }
+    telegramID: { type: Number,   required: true, unique: true               },
+    gmailID:    { type: Number,   required: true, unique: true, default: NaN },
+    chatsId:    { type: [Number], required: true, default: []                },
+    expire:     { type: Date }
 });
 
 export default mongoose.model<IUser>("User", UserSchema);

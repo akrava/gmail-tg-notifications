@@ -5,8 +5,7 @@ bot.start(async (ctx) => {
     if (ctx.chat.type === "private") {
         const user = await FindUserById(ctx.chat.id);
         if (user === false) {
-            // TODO add more
-            const newUser = await CreateUser({ id: ctx.chat.id, chatsId: [], firstName: "" });
+            const newUser = await CreateUser({ telegramID: ctx.chat.id });
             if (typeof newUser !== "undefined") {
                 ctx.reply("Successfully registered. Now you can adjust it. /help to see more");
             } else {
