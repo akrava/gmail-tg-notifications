@@ -1,12 +1,13 @@
-import { bot as TelegramBot } from "@telegram/index";
-import { app as ServerApp } from "@server/index";
-import { error, info } from "@service/logging";
-import Mongoose from "mongoose";
 import dotenv from "dotenv";
 
 if (process.env.NODE_ENV !== "production") {
     dotenv.config();
 }
+
+import { bot as TelegramBot } from "@telegram/index";
+import { app as ServerApp } from "@server/index";
+import { error, info } from "@service/logging";
+import Mongoose from "mongoose";
 
 const connectionsOptions = {
     useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false
