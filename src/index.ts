@@ -8,6 +8,7 @@ import { bot as TelegramBot } from "@telegram/index";
 import { app as ServerApp } from "@server/index";
 import { error, info } from "@service/logging";
 import Mongoose from "mongoose";
+import url from "url";
 
 const connectionsOptions = {
     useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false
@@ -20,5 +21,8 @@ Mongoose.connect(process.env.DB_URL, connectionsOptions)
         "server", `Running on port ${process.env.PORT}`
     )))
     .catch((err) => error("server", err))
-    .then(() => TelegramBot.launch())
+    .then(() => TelegramBot.telegram.setWebhook(
+        url.resolve(process.env.SERVER_PATH, process.env.WEBHOOK_TG_PATH
+    )))
+    .then((res) => res ? TelegramBot.launch() : error("tg", new Error("webhook error")))
     .catch((err) => error("tg", err));
