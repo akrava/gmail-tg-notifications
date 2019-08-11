@@ -1,9 +1,10 @@
-import { app } from "@server/index";
+import Express from "express";
 import bodyParser from "body-parser";
 import { OAuth2Client } from "google-auth-library";
 
 const jsonBodyParser = bodyParser.json();
 const authClient = new OAuth2Client();
+export const router = Express.Router();
 
 const messages = [];
 const claims = [];
@@ -11,7 +12,7 @@ const tokens = [];
 
 console.log(process.env.GAPPS_PUSH_PATH);
 console.log("TEEEEEEEEST");
-app.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
+router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     // Verify that the request originates from the application.
     if (req.query.token !== process.env.PUBSUB_VERIFICATION_TOKEN) {
         res.status(204).send();
@@ -46,11 +47,6 @@ app.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     console.log(message);
     messages.push(message);
 
-    res.status(204).send();
-});
-
-app.use((req, res) => {
-    console.log("TEEEEEEEEST");
     res.status(204).send();
 });
 

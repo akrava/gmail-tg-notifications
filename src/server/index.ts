@@ -1,5 +1,6 @@
 import Express from "express";
 import { bot } from "@telegram/index";
+import { router as gmailRouter } from "@gmail/index";
 import path from "path";
 
 export const app = Express();
@@ -9,6 +10,7 @@ bot.telegram.setWebhook(path.join(process.env.SERVER_PATH, process.env.WEBHOOK_T
 
 app.use(Express.static("assets/secure"));
 app.use(Express.static("assets"));
+app.use(gmailRouter);
 
 app.use((req, res) => {
     console.log("k");
