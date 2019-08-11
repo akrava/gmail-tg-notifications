@@ -1,3 +1,52 @@
+import { app } from "@server/index";
+import bodyParser from "body-parser";
+import { OAuth2Client } from "google-auth-library";
+
+const jsonBodyParser = bodyParser.json();
+const authClient = new OAuth2Client();
+
+const messages = [];
+const claims = [];
+const tokens = [];
+
+app.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
+    // Verify that the request originates from the application.
+    if (req.query.token !== process.env.PUBSUB_VERIFICATION_TOKEN) {
+        res.status(204).send();
+        //res.status(400).send("Invalid request");
+        return;
+    }
+    console.log(req.query);
+    console.log(req.query.token);
+    // Verify that the push request originates from Cloud Pub/Sub.
+    try {
+        // Get the Cloud Pub/Sub-generated JWT in the "Authorization" header.
+        const bearer = req.header("Authorization");
+        const [, token] = bearer.match(/Bearer (.*)/);
+        tokens.push(token);
+        console.log(bearer);
+        // Verify and decode the JWT.
+        const ticket = await authClient.verifyIdToken({
+            idToken: token,
+            audience: "example.com",
+        });
+
+        const claim = ticket.getPayload();
+        claims.push(claim);
+    } catch (e) {
+        res.status(204).send();
+        //res.status(400).send("Invalid token");
+        return;
+    }
+    console.log(req.body);
+    // The message is a unicode string encoded in base64.
+    const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
+    console.log(message);
+    messages.push(message);
+
+    res.status(204).send();
+});
+
 // import * as fs from "fs";
 // import * as readline from "readline";
 // import { google } from "googleapis";
