@@ -5,6 +5,7 @@
             "@telegram/*":   [ "telegram/*"          ],
             "@gmail/*":      [ "gmail/*"             ],
             "@service/*":    [ "service/*"           ],
+            "@server/*":     [ "server/*"            ],
             "@model/*":      [ "db/model/*"          ],
             "@controller/*": [ "db/controller/*"     ],
             "@commands/*":   [ "telegram/commands/*" ],

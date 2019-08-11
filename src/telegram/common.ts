@@ -1,5 +1,5 @@
 import { ContextMessageUpdate } from "telegraf";
-import { CreateUser, FindUserById } from "@controller/user";
+import { FindUserById } from "@controller/user";
 
 export async function checkUser(ctx: ContextMessageUpdate) {
     const user = await FindUserById(ctx.chat.id);

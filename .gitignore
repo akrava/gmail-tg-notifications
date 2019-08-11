@@ -62,5 +62,4 @@ typings/
 
 # extra
 build/
-credentials/
 .vscode/
