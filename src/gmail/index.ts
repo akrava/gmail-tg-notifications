@@ -10,6 +10,7 @@ const claims = [];
 const tokens = [];
 
 console.log(process.env.GAPPS_PUSH_PATH);
+console.log("TEEEEEEEEST");
 app.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     // Verify that the request originates from the application.
     if (req.query.token !== process.env.PUBSUB_VERIFICATION_TOKEN) {
@@ -45,6 +46,11 @@ app.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     console.log(message);
     messages.push(message);
 
+    res.status(204).send();
+});
+
+app.use((req, res) => {
+    console.log("TEEEEEEEEST");
     res.status(204).send();
 });
 
