@@ -1,7 +1,7 @@
-import { bot } from "@telegram/index";
 import { CreateUser, FindUserById } from "@controller/user";
+import { ContextMessageUpdate, Middleware } from "telegraf";
 
-bot.start(async (ctx) => {
+const start: Middleware<ContextMessageUpdate> = async function(ctx) {
     if (ctx.chat.type === "private") {
         const user = await FindUserById(ctx.chat.id);
         if (user === false) {
@@ -19,4 +19,6 @@ bot.start(async (ctx) => {
     } else {
         ctx.reply("To start using this service you should send command start in private chat");
     }
-});
+};
+
+export default start;
