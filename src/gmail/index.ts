@@ -30,7 +30,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         // Verify and decode the JWT.
         const ticket = await authClient.verifyIdToken({
             idToken: token,
-            audience: "example.com",
+            audience: process.env.SERVER_PATH.replace(/https?:\/\/|\//g, ""),
         });
 
         const claim = ticket.getPayload();
