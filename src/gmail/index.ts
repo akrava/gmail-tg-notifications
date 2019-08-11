@@ -10,8 +10,6 @@ const messages = [];
 const claims = [];
 const tokens = [];
 
-console.log(process.env.GAPPS_PUSH_PATH);
-console.log("TEEEEEEEEST");
 router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     // Verify that the request originates from the application.
     if (req.query.token !== process.env.PUBSUB_VERIFICATION_TOKEN) {
@@ -28,6 +26,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         const [, token] = bearer.match(/Bearer (.*)/);
         tokens.push(token);
         console.log(bearer);
+        console.log(token);
         // Verify and decode the JWT.
         const ticket = await authClient.verifyIdToken({
             idToken: token,
@@ -37,6 +36,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         const claim = ticket.getPayload();
         claims.push(claim);
     } catch (e) {
+        console.log(e);
         res.status(204).send();
         //res.status(400).send("Invalid token");
         return;
