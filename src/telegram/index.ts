@@ -6,6 +6,4 @@ export const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.start(startCb);
 
-bot.catch((err: Error) => {
-    error("tg bot", err);
-});
+bot.catch((err: Error) =>  error(err));

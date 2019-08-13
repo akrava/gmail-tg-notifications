@@ -14,15 +14,17 @@ const connectionsOptions = {
     useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false
 };
 
-Mongoose.connect(process.env.DB_URL, connectionsOptions)
-    .catch((err) => error("db", err))
-    .then(() => info("db", "Opened connection with db"))
-    .then(() => ServerApp.listen(process.env.PORT, () => info(
-        "server", `Running on port ${process.env.PORT}`
-    )))
-    .catch((err) => error("server", err))
-    .then(() => TelegramBot.telegram.setWebhook(
+const tgOptions: object = { webhook: {
+    webhookPath: process.env.WEBHOOK_TG_PATH,
+    tlsOptions: null,
+    port: Number.parseInt(process.env.PORT, 10)
+}};
+
+Mongoose.connect(process.env.DB_URL, connectionsOptions,
+        (err) => err ? error(err) : info("Opened connection with db")
+    ).then(() => ServerApp.listen(process.env.PORT, () => info(
+        `Running on port ${process.env.PORT}`
+    ))).then(() => TelegramBot.telegram.setWebhook(
         url.resolve(process.env.SERVER_PATH, process.env.WEBHOOK_TG_PATH
-    )))
-    .then((res) => res ? TelegramBot.launch() : error("tg", new Error("webhook error")))
-    .catch((err) => error("tg", err));
+    ))).then((res) => res ? TelegramBot.launch(tgOptions) : error(new Error("webhook error")))
+    .catch((err) => error(err));

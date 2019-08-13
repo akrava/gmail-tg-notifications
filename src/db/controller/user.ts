@@ -19,7 +19,7 @@ export async function CreateUser(obj: ICreateUserInput) {
             return data;
         })
         .catch((e: Error) => {
-            error("db", e);
+            error(e);
         });
 }
 
@@ -29,7 +29,7 @@ export async function FindUserById(tgId: IUser["telegramID"]) {
             return data || false;
         })
         .catch((e: Error) => {
-            error("db", e);
+            error(e);
         });
 }
 
@@ -39,7 +39,7 @@ export async function DeleteUser(tgId: IUser["telegramID"]) {
             return res.ok === 1;
         })
         .catch((e: Error) => {
-            error("db", e);
+            error(e);
             return false;
         });
 }
