@@ -1,5 +1,6 @@
 export function error(e: Error) {
     console.error(log("Error", e.message));
+    console.log(e.stack);
 }
 
 export function warning(what: string) {
