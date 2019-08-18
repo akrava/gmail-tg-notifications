@@ -14,18 +14,11 @@ const connectionsOptions = {
     useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false
 };
 
-const tgOptions: object = { webhook: {
-    hookPath: process.env.WEBHOOK_TG_PATH,
-    tlsOptions: null,
-    port: Number.parseInt(process.env.PORT, 10),
-    domain: process.env.SERVER_PATH
-}};
-
 Mongoose.connect(process.env.DB_URL, connectionsOptions,
         (err) => err ? error(err) : info("Opened connection with db")
     ).then(() => ServerApp.listen(process.env.PORT, () => info(
         `Running on port ${process.env.PORT}`
     ))).then(() => TelegramBot.telegram.setWebhook(
         url.resolve(process.env.SERVER_PATH, process.env.WEBHOOK_TG_PATH
-    ))).then((res) => res ? TelegramBot.launch(tgOptions) : error(new Error("webhook error")))
+    ))).then((res) => res ? info("Tg bot started") : error(new Error("webhook error")))
     .catch((err) => error(err));
