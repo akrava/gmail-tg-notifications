@@ -15,10 +15,10 @@ const connectionsOptions = {
 };
 
 const tgOptions: object = { webhook: {
-    webhookPath: process.env.WEBHOOK_TG_PATH,
+    hookPath: process.env.WEBHOOK_TG_PATH,
     tlsOptions: null,
     port: Number.parseInt(process.env.PORT, 10),
-    host: process.env.SERVER_PATH
+    domain: process.env.SERVER_PATH
 }};
 
 Mongoose.connect(process.env.DB_URL, connectionsOptions,
