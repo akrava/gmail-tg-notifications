@@ -10,6 +10,6 @@ export async function checkUser(ctx: ContextMessageUpdate) {
         ctx.reply("Error ocurred, contact to maintainer");
         return false;
     } else {
-        return true;
+        return user;
     }
 }

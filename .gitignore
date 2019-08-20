@@ -63,3 +63,4 @@ typings/
 # extra
 build/
 .vscode/
+secure/
