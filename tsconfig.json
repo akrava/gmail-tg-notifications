@@ -2,13 +2,14 @@
     "compilerOptions": {
         "baseUrl": "src",
         "paths": {
-            "@telegram/*":   [ "telegram/*"          ],
-            "@gmail/*":      [ "gmail/*"             ],
-            "@service/*":    [ "service/*"           ],
-            "@server/*":     [ "server/*"            ],
-            "@model/*":      [ "db/model/*"          ],
-            "@controller/*": [ "db/controller/*"     ],
-            "@commands/*":   [ "telegram/commands/*" ],
+            "@telegram/*":   [ "telegram/*"             ],
+            "@gmail/*":      [ "gmail/*"                ],
+            "@service/*":    [ "service/*"              ],
+            "@server/*":     [ "server/*"               ],
+            "@model/*":      [ "db/model/*"             ],
+            "@controller/*": [ "db/controller/*"        ],
+            "@commands/*":   [ "telegram/commands/*"    ],
+            "@ambient/*":    [ "ambient_declarations/*" ]
         },
         "module": "commonjs",
         "target": "esnext",

@@ -2,7 +2,7 @@
 declare module "telegraf/session" {
     import { Middleware, ContextMessageUpdate } from "telegraf";
     
-    export function session<TContext extends ContextMessageUpdate>(opts?: Partial<{
+    export default function session<TContext extends ContextMessageUpdate>(opts?: Partial<{
         property: string;
         store: Map<string, any>;
         getSessionKey: (ctx: TContext) => string;

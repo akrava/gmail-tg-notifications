@@ -71,7 +71,7 @@ declare module "telegraf/stage" {
     
     export type StageOptions = SceneContextOptions;
     
-    export class Stage<TContext extends SceneContextMessageUpdate> extends Composer<TContext> {
+    export default class Stage<TContext extends SceneContextMessageUpdate> extends Composer<TContext> {
         constructor(scenes: Scene<TContext>[], options?: Partial<StageOptions>)
     
         register: (...scenes: Scene<TContext>[]) => this;
