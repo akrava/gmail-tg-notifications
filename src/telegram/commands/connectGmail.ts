@@ -32,7 +32,7 @@ gmailConnectScene.enter(async (ctx) => {
         }
     } else {
         ctx.reply("Error ocurred");
-        Stage.leave();
+        return Stage.leave();
     }
 });
 gmailConnectScene.leave((ctx) => ctx.reply("Gmail config finished"));
@@ -40,14 +40,13 @@ gmailConnectScene.on("message", async (ctx) => {
     const user = await FindUserById(ctx.chat.id);
     if (!user) {
         ctx.reply("Error ocurred");
-        Stage.leave();
-        return;
+        return Stage.leave();
     }
     const obj = ctx.scene.session.state as IAuthObject;
     const auth = await getNewToken(ctx.chat.id, obj.oauth, ctx.message.text);
     if (auth === null) {
         ctx.reply("Error ocurred, bad token");
-        Stage.leave();
+        return Stage.leave();
     } else {
         ctx.reply("Successfully authorized");
         const gmail = google.gmail({ version: "v1", auth });
@@ -58,8 +57,7 @@ gmailConnectScene.on("message", async (ctx) => {
         console.log(res);
         if (res.status !== 200) {
             ctx.reply("Error ocurred, couldn't subscribe");
-            Stage.leave();
-            return;
+            return Stage.leave();
         }
         const utcSeconds = Number.parseInt(res.data.expiration, 10);
         const date = new Date(0);
@@ -82,7 +80,7 @@ gmailConnectScene.on("message", async (ctx) => {
         // }).on("error", (err) => {
         //     console.log("Error: " + err.message);
         // });
-        Stage.leave();
+        return Stage.leave();
     }
 });
 

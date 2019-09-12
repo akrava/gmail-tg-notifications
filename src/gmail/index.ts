@@ -19,10 +19,7 @@ export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
     const tokenPath = `secure/token${tgID}.json`;
     try {
-        console.log("before");
-        const bool = (await fileExistAsync(tokenPath));
-        console.log("next");
-        if (!bool) {
+        if (!(await fileExistAsync(tokenPath))) {
             return { oauth: oAuth2Client, authorized: false };
         } else {
             const token = (await readFileAsync(tokenPath)).toString();
