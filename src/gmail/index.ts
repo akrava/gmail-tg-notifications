@@ -2,7 +2,7 @@ import { OAuth2Client } from "google-auth-library";
 import Express from "express";
 import { google } from "googleapis";
 import { router as pushUpdatesRouter } from "@gmail/pushUpdates";
-import { error } from "@service/logging";
+import { error, info } from "@service/logging";
 import { readFileAsync, fileExistAsync, writeFileAsync } from "@service/asyncFs";
 
 export const router = Express.Router();
@@ -50,6 +50,7 @@ export async function getNewToken(
                 error(err);
                 return resolve(null);
             }
+            info(JSON.stringify(token));
             oAuth2Client.setCredentials(token);
             const tokenPath = `secure/token${tgID}.json`;
             try {

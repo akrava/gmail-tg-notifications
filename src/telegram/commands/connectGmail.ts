@@ -60,23 +60,6 @@ gmailConnectScene.on("message", async (ctx) => {
         const date = new Date(0);
         date.setUTCSeconds(utcSeconds);
         console.log(date);
-        // const cronPath = `https://www.easycron.com/rest/add?token=${process.env.UPDATE_PUB_SUB_TOPIC_PATH}&cron_expression=* * * * *`;
-        // https.get(cronPath, (resp) => {
-        //     let data = '';
-
-        //     // A chunk of data has been recieved.
-        //     resp.on('data', (chunk) => {
-        //         data += chunk;
-        //     });
-
-        //     // The whole response has been received. Print out the result.
-        //     resp.on('end', () => {
-        //         console.log(JSON.parse(data).explanation);
-        //     });
-
-        // }).on("error", (err) => {
-        //     console.log("Error: " + err.message);
-        // });
         return ctx.scene.leave();
     }
 });

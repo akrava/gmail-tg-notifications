@@ -20,9 +20,6 @@ export function writeFileAsync(fileName: string, data: string) {
 export function fileExistAsync(filePath: string): Promise<boolean> {
     return new Promise((resolve) => {
         fs.access(filePath, fs.constants.F_OK, (err) => {
-            if (err) {
-                error(err);
-            }
             err ? resolve(false) : resolve(true);
         });
     });
