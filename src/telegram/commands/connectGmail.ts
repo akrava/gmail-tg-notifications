@@ -19,10 +19,10 @@ gmailConnectScene.enter(async (ctx) => {
     if (obj !== null) {
         if (obj.authorized) {
             ctx.reply("Successfully authorized and connected");
-            Stage.leave();
+            return Stage.leave();
         } else {
             ctx.reply(
-                "You need to authorize at gmail. Visit next link to get token." +
+                "You need to authorize at gmail. Visit next link to get token. " +
                 "To cancel tap /cancel"
             );
             const url = generateUrlToGetToken(obj.oauth);
