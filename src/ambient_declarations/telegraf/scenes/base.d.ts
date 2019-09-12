@@ -1,5 +1,4 @@
-// from https://github.com/mnb3000/telegraf
-declare module "telegraf/scenes/wizard" {
+declare module "telegraf/scenes/base" {
     import { Middleware, Composer, ContextMessageUpdate } from "telegraf";
 
     export interface SceneContextOptions {
@@ -23,7 +22,7 @@ declare module "telegraf/scenes/wizard" {
 
         state: object;
 
-        readonly current: BaseScene<TContext> | null;
+        readonly current: Scene<TContext> | null;
 
         reset: () => void;
 
@@ -45,7 +44,7 @@ declare module "telegraf/scenes/wizard" {
         ttl?: number;
     }
     
-    export class BaseScene<TContext extends SceneContextMessageUpdate> extends Composer<TContext> {
+    export default class Scene<TContext extends SceneContextMessageUpdate> extends Composer<TContext> {
         constructor(id: string, options?: Partial<BaseSceneOptions<TContext>>)
     
         id: string;
@@ -66,23 +65,4 @@ declare module "telegraf/scenes/wizard" {
     
         leaveMiddleware: () => Middleware<TContext>;
     }
-    
-    export type Scene<TContext extends SceneContextMessageUpdate> = BaseScene<TContext>;
-    
-    export type StageOptions = SceneContextOptions;
-    
-    export class Stage<TContext extends SceneContextMessageUpdate> extends Composer<TContext> {
-        constructor(scenes: Scene<TContext>[], options?: Partial<StageOptions>)
-    
-        register: (...scenes: Scene<TContext>[]) => this;
-    
-        middleware: () => Middleware<TContext>;
-    
-        static enter: (sceneId: string, initialState?: object, silent?: boolean) => Middleware<SceneContextMessageUpdate>;
-    
-        static reenter: () => Middleware<SceneContextMessageUpdate>;
-    
-        static leave: () => Middleware<SceneContextMessageUpdate>;
-    }
-
 }

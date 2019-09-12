@@ -2,6 +2,10 @@ import { ContextMessageUpdate } from "telegraf";
 import { FindUserById } from "@controller/user";
 
 export async function checkUser(ctx: ContextMessageUpdate) {
+    if (ctx.chat.type !== "private") {
+        ctx.reply("Use private chat.");
+        return false;
+    }
     const user = await FindUserById(ctx.chat.id);
     if (user === false) {
         ctx.reply("You are not registered. /start to proceed");

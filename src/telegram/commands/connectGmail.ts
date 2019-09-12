@@ -1,49 +1,98 @@
-import { CreateUser, FindUserById } from "@controller/user";
+import https from "https";
+import { FindUserById } from "@controller/user";
 import { checkUser } from "@telegram/common";
-import { ContextMessageUpdate, Middleware } from "telegraf";
-import { authorizeUser, generateUrlToGetToken } from "@gmail/index";
-import { Composer, Markup } from "telegraf";
+import { Middleware } from "telegraf";
+import { google } from "googleapis";
+import { authorizeUser, generateUrlToGetToken, getNewToken, IAuthObject } from "@gmail/index";
 import Stage from "telegraf/stage";
-// import WizardScene from "telegraf/scenes/wizard";
+import Scene, { SceneContextMessageUpdate } from "telegraf/scenes/base";
 
-// const authGmail = new WizardScene("auth-gmail",
-//     (ctx) => {
-//         ctx.reply('Step 1', Markup.inlineKeyboard([
-//             Markup.urlButton('❤️', 'http://telegraf.js.org'),
-//             Markup.callbackButton('➡️ Next', 'next')
-//         ]).extra())
-//         return ctx.wizard.next()
-//     },
-//     stepHandler,
-//     (ctx) => {
-//         ctx.reply('Step 3')
-//         return ctx.wizard.next()
-//     },
-//     (ctx) => {
-//         ctx.reply('Step 4')
-//         return ctx.wizard.next()
-//     },
-//     (ctx) => {
-//         ctx.reply('Done')
-//         return ctx.scene.leave()
-//     }
-// );
+const gmailConnectScene = new Scene("connect_gmail");
+gmailConnectScene.enter(async (ctx) => {
+    const user = await FindUserById(ctx.chat.id);
+    if (!user) {
+        ctx.reply("Error ocurred");
+        Stage.leave();
+        return;
+    }
+    const obj = await authorizeUser(user.telegramID);
+    if (obj !== null) {
+        if (obj.authorized) {
+            ctx.reply("Successfully authorized and connected");
+            Stage.leave();
+        } else {
+            ctx.reply(
+                "You need to authorize at gmail. Visit next link to get token." +
+                "To cancel tap /cancel"
+            );
+            const url = generateUrlToGetToken(obj.oauth);
+            ctx.reply(url);
+            ctx.reply("Enter token:");
+            ctx.scene.session.state = obj;
+        }
+    } else {
+        ctx.reply("Error ocurred");
+        Stage.leave();
+    }
+});
+gmailConnectScene.leave((ctx) => ctx.reply("Gmail config finished"));
+gmailConnectScene.on("message", async (ctx) => {
+    const user = await FindUserById(ctx.chat.id);
+    if (!user) {
+        ctx.reply("Error ocurred");
+        Stage.leave();
+        return;
+    }
+    const obj = ctx.scene.session.state as IAuthObject;
+    const auth = await getNewToken(ctx.chat.id, obj.oauth, ctx.message.text);
+    if (auth === null) {
+        ctx.reply("Error ocurred, bad token");
+        Stage.leave();
+    } else {
+        ctx.reply("Successfully authorized");
+        const gmail = google.gmail({ version: "v1", auth });
+        const res = await gmail.users.watch({
+            userId: "me",
+            requestBody: { topicName: process.env.PUB_SUB_TOPIC }
+        });
+        console.log(res);
+        if (res.status !== 200) {
+            ctx.reply("Error ocurred, couldn't subscribe");
+            Stage.leave();
+            return;
+        }
+        const utcSeconds = Number.parseInt(res.data.expiration, 10);
+        const date = new Date(0);
+        date.setUTCSeconds(utcSeconds);
+        console.log(date);
+        // const cronPath = `https://www.easycron.com/rest/add?token=${process.env.UPDATE_PUB_SUB_TOPIC_PATH}&cron_expression=* * * * *`;
+        // https.get(cronPath, (resp) => {
+        //     let data = '';
 
-// export const stage = new Stage([authGmail], { default: "auth-gmail" });
+        //     // A chunk of data has been recieved.
+        //     resp.on('data', (chunk) => {
+        //         data += chunk;
+        //     });
 
-const connectGmail: Middleware<ContextMessageUpdate> = async function(ctx) {
+        //     // The whole response has been received. Print out the result.
+        //     resp.on('end', () => {
+        //         console.log(JSON.parse(data).explanation);
+        //     });
+
+        // }).on("error", (err) => {
+        //     console.log("Error: " + err.message);
+        // });
+        Stage.leave();
+    }
+});
+
+export const stage = new Stage([gmailConnectScene]);
+stage.command("cancel", Stage.leave());
+
+const connectGmail: Middleware<SceneContextMessageUpdate> = async function(ctx) {
     const user = await checkUser(ctx);
     if (user !== false) {
-        const obj = await authorizeUser(user.gmailID);
-        if (obj !== null) {
-            if (obj.authorized) {
-                ctx.reply("successfully");
-            } else {
-                const url = generateUrlToGetToken(obj.oauth);
-            }
-        } else {
-            ctx.reply("Error ocurred");
-        }
+        ctx.scene.enter("connect_gmail");
     }
 };
 

@@ -3,17 +3,13 @@ import { error } from "@service/logging";
 
 export interface ICreateUserInput {
     telegramID: IUser["telegramID"];
-    gmailID?: IUser["gmailID"];
     chatsId?: IUser["chatsId"];
-    expire?: IUser["expire"];
 }
 
 export async function CreateUser(obj: ICreateUserInput) {
     return User.create({
             telegramID: obj.telegramID,
-            gmailID: obj.gmailID,
             chatsId: obj.chatsId,
-            expire: obj.expire
         })
         .then((data: IUser) => {
             return data;
@@ -31,6 +27,11 @@ export async function FindUserById(tgId: IUser["telegramID"]) {
         .catch((e: Error) => {
             error(e);
         });
+}
+
+export async function SetChatsId(tgId: IUser["telegramID"], chatsId: IUser["chatsId"]) {
+    return User.findOneAndUpdate({ telegramID: tgId }, { $set: { chatsId } }, { upsert: true })
+        .then(() => true).catch((e) => (error(e), false));
 }
 
 export async function DeleteUser(tgId: IUser["telegramID"]) {

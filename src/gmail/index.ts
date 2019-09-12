@@ -13,7 +13,7 @@ const SCOPES = [ "https://www.googleapis.com/auth/gmail.readonly" ];
 
 export interface IAuthObject { oauth: OAuth2Client; authorized: boolean; }
 
-export async function authorizeUser(userGmailId: number): Promise<IAuthObject | null> {
+export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
     let credentials;
     try {
         credentials = JSON.parse((await readFileAsync("secure/credentials.json")).toString());
@@ -23,7 +23,7 @@ export async function authorizeUser(userGmailId: number): Promise<IAuthObject | 
     }
     const { client_secret, client_id, redirect_uris } = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-    const tokenPath = `secure/token${userGmailId}.json`;
+    const tokenPath = `secure/token${tgID}.json`;
     try {
         if (!fileExistAsync(tokenPath)) {
             return { oauth: oAuth2Client, authorized: false };
@@ -46,7 +46,7 @@ export function generateUrlToGetToken(oAuth2Client: OAuth2Client) {
 }
 
 export async function getNewToken(
-    userGmailId: number,
+    tgID: number,
     oAuth2Client: OAuth2Client,
     code: string
 ): Promise<OAuth2Client | null> {
@@ -57,12 +57,12 @@ export async function getNewToken(
                 return resolve(null);
             }
             oAuth2Client.setCredentials(token);
-            const tokenPath = `secure/token${userGmailId}.json`;
+            const tokenPath = `secure/token${tgID}.json`;
             try {
                 await writeFileAsync(tokenPath, JSON.stringify(token));
-                return oAuth2Client;
+                resolve(oAuth2Client);
             } catch (err) {
-                return null;
+                resolve(null);
             }
         });
     });

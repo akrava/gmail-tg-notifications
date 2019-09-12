@@ -1,14 +1,13 @@
 import dotenv from "dotenv";
+dotenv.config();
 import { bot as TelegramBot } from "@telegram/index";
 import { app as ServerApp } from "@server/index";
 import { error, info } from "@service/logging";
 import Mongoose from "mongoose";
 import url from "url";
 
-dotenv.config();
-
 const connectionsOptions = {
-    useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false
+    useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false, useUnifiedTopology: true
 };
 
 Mongoose.connect(process.env.DB_URL, connectionsOptions,
