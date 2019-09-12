@@ -12,27 +12,23 @@ gmailConnectScene.enter(async (ctx) => {
     const user = await FindUserById(ctx.chat.id);
     if (!user) {
         ctx.reply("Error ocurred");
-        Stage.leave();
-        return;
+        return ctx.scene.leave();
     }
     const obj = await authorizeUser(user.telegramID);
     if (obj !== null) {
         if (obj.authorized) {
             ctx.reply("Successfully authorized and connected");
-            return Stage.leave();
+            return ctx.scene.leave();
         } else {
-            ctx.reply(
-                "You need to authorize at gmail. Visit next link to get token. " +
-                "To cancel tap /cancel"
-            );
             const url = generateUrlToGetToken(obj.oauth);
+            ctx.reply("You need to authorize at gmail. Open link below to get token. To cancel tap /cancel");
             ctx.reply(url);
             ctx.reply("Enter token:");
             ctx.scene.session.state = obj;
         }
     } else {
         ctx.reply("Error ocurred");
-        return Stage.leave();
+        return ctx.scene.leave();
     }
 });
 gmailConnectScene.leave((ctx) => ctx.reply("Gmail config finished"));
@@ -40,13 +36,13 @@ gmailConnectScene.on("message", async (ctx) => {
     const user = await FindUserById(ctx.chat.id);
     if (!user) {
         ctx.reply("Error ocurred");
-        return Stage.leave();
+        return ctx.scene.leave();
     }
     const obj = ctx.scene.session.state as IAuthObject;
     const auth = await getNewToken(ctx.chat.id, obj.oauth, ctx.message.text);
     if (auth === null) {
         ctx.reply("Error ocurred, bad token");
-        return Stage.leave();
+        return ctx.scene.leave();
     } else {
         ctx.reply("Successfully authorized");
         const gmail = google.gmail({ version: "v1", auth });
@@ -57,7 +53,7 @@ gmailConnectScene.on("message", async (ctx) => {
         console.log(res);
         if (res.status !== 200) {
             ctx.reply("Error ocurred, couldn't subscribe");
-            return Stage.leave();
+            return ctx.scene.leave();
         }
         const utcSeconds = Number.parseInt(res.data.expiration, 10);
         const date = new Date(0);
@@ -80,7 +76,7 @@ gmailConnectScene.on("message", async (ctx) => {
         // }).on("error", (err) => {
         //     console.log("Error: " + err.message);
         // });
-        return Stage.leave();
+        return ctx.scene.leave();
     }
 });
 
