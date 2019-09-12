@@ -12,6 +12,9 @@ export function readFileAsync(fileName: string): Promise<Buffer> {
 export function writeFileAsync(fileName: string, data: string) {
     return new Promise((resolve, reject) => {
         fs.writeFile(fileName, data, (err) => {
+            if (err) {
+                error(err);
+            }
             err ? reject(err) : resolve();
         });
     });

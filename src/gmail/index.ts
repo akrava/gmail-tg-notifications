@@ -1,8 +1,9 @@
+import path from "path";
 import { OAuth2Client } from "google-auth-library";
 import Express from "express";
 import { google } from "googleapis";
 import { router as pushUpdatesRouter } from "@gmail/pushUpdates";
-import { error, info } from "@service/logging";
+import { error } from "@service/logging";
 import { readFileAsync, fileExistAsync, writeFileAsync } from "@service/asyncFs";
 
 export const router = Express.Router();
@@ -17,7 +18,7 @@ export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
     const { client_secret, client_id, redirect_uris } = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-    const tokenPath = `secure/token${tgID}.json`;
+    const tokenPath = path.resolve(__dirname, `../../secure/token${tgID}.json`);
     try {
         if (!(await fileExistAsync(tokenPath))) {
             return { oauth: oAuth2Client, authorized: false };
@@ -50,9 +51,8 @@ export async function getNewToken(
                 error(err);
                 return resolve(null);
             }
-            info(JSON.stringify(token));
             oAuth2Client.setCredentials(token);
-            const tokenPath = `secure/token${tgID}.json`;
+            const tokenPath = path.resolve(__dirname, `../../secure/token${tgID}.json`);
             try {
                 await writeFileAsync(tokenPath, JSON.stringify(token));
                 resolve(oAuth2Client);
