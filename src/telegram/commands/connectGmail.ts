@@ -21,7 +21,7 @@ gmailConnectScene.enter(async (ctx) => {
             return ctx.scene.leave();
         } else {
             const url = generateUrlToGetToken(obj.oauth);
-            ctx.reply("You need to authorize at gmail");
+            ctx.reply("");
             ctx.reply("You need to authorize at gmail. Open link below to get token. To cancel tap /cancel");
             ctx.reply(url);
             ctx.reply("Enter token:");
