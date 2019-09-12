@@ -14,13 +14,7 @@ const SCOPES = [ "https://www.googleapis.com/auth/gmail.readonly" ];
 export interface IAuthObject { oauth: OAuth2Client; authorized: boolean; }
 
 export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
-    let credentials;
-    try {
-        credentials = JSON.parse((await readFileAsync("secure/credentials.json")).toString());
-    } catch (e) {
-        error(e);
-        return null;
-    }
+    const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
     const { client_secret, client_id, redirect_uris } = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
     const tokenPath = `secure/token${tgID}.json`;
