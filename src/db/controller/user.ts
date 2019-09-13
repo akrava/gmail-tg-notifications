@@ -5,13 +5,17 @@ export interface ICreateUserInput {
     telegramID: IUser["telegramID"];
     chatsId?: IUser["chatsId"];
     token?: IUser["token"];
+    email: IUser["email"];
+    historyId?: IUser["historyId"];
 }
 
 export async function CreateUser(obj: ICreateUserInput) {
     return User.create({
             telegramID: obj.telegramID,
             chatsId: obj.chatsId,
-            token: obj.token
+            token: obj.token,
+            email: obj.email,
+            historyId: obj.historyId
         })
         .then((data: IUser) => {
             return data;
@@ -31,6 +35,16 @@ export async function FindUserById(tgId: IUser["telegramID"]) {
         });
 }
 
+export async function FindUserByEmail(email: IUser["email"]) {
+    return User.findOne({ email })
+        .then((data: IUser) => {
+            return data || false;
+        })
+        .catch((e: Error) => {
+            error(e);
+        });
+}
+
 export async function SetChatsId(tgId: IUser["telegramID"], chatsId: IUser["chatsId"]) {
     return User.findOneAndUpdate({ telegramID: tgId }, { $set: { chatsId } }, { upsert: true })
         .then(() => true).catch((e) => (error(e), false));
@@ -38,6 +52,16 @@ export async function SetChatsId(tgId: IUser["telegramID"], chatsId: IUser["chat
 
 export async function SetToken(tgId: IUser["telegramID"], token: IUser["token"]) {
     return User.findOneAndUpdate({ telegramID: tgId }, { $set: { token } }, { upsert: true })
+        .then(() => true).catch((e) => (error(e), false));
+}
+
+export async function SetHistoryId(tgId: IUser["telegramID"], hId: IUser["historyId"]) {
+    return User.findOneAndUpdate({ telegramID: tgId }, { $set: { historyId: hId } }, { upsert: true })
+        .then(() => true).catch((e) => (error(e), false));
+}
+
+export async function SetEmail(tgId: IUser["telegramID"], email: IUser["email"]) {
+    return User.findOneAndUpdate({ telegramID: tgId }, { $set: { email } }, { upsert: true })
         .then(() => true).catch((e) => (error(e), false));
 }
 

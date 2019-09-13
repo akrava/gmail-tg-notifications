@@ -5,7 +5,7 @@ const start: Middleware<ContextMessageUpdate> = async function(ctx) {
     if (ctx.chat.type === "private") {
         const user = await FindUserById(ctx.chat.id);
         if (user === false) {
-            const newUser = await CreateUser({ telegramID: ctx.chat.id });
+            const newUser = await CreateUser({ telegramID: ctx.chat.id, email: ctx.chat.id.toString()});
             if (typeof newUser !== "undefined") {
                 ctx.reply("Successfully registered. Now you can adjust it. /help to see more");
             } else {

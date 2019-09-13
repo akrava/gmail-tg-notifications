@@ -5,12 +5,16 @@ export interface IUser extends Document {
     telegramID: number;
     chatsId: number[];
     token: string;
+    email: string;
+    historyId: number;
 }
 
 const UserSchema: Schema = new Schema({
     telegramID: { type: Number,   required: true, unique: true },
     chatsId:    { type: [Number], required: true, default: []  },
-    token:      { type: String,   required: true, default: ""  }
+    token:      { type: String,   required: true, default: ""  },
+    email:      { type: String,   required: true, unique: true },
+    historyId:  { type: Number,   required: true, default: 0   }
 });
 
 export default mongoose.model<IUser>("User", UserSchema);

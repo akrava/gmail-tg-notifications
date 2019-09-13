@@ -1,5 +1,5 @@
 import https from "https";
-import { FindUserById } from "@controller/user";
+import { FindUserById, SetEmail, SetHistoryId } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { Middleware } from "telegraf";
 import { google } from "googleapis";
@@ -8,6 +8,7 @@ import { authorizeUser, generateUrlToGetToken, getNewToken, IAuthObject } from "
 import Stage from "telegraf/stage";
 import Scene, { SceneContextMessageUpdate } from "telegraf/scenes/base";
 import { OAuth2Client } from "google-auth-library";
+import { IUser } from "@model/user";
 
 const gmailConnectScene = new Scene("connect_gmail");
 gmailConnectScene.enter(async (ctx) => {
@@ -21,7 +22,7 @@ gmailConnectScene.enter(async (ctx) => {
         if (obj.authorized) {
             ctx.reply("");
             ctx.reply("Successfully authorized from cache");
-            if ((await watchMails(obj.oauth))) {
+            if ((await watchMails(user.telegramID, obj.oauth))) {
                 await ctx.reply("Subscribed for new emails successfully");
                 return ctx.scene.leave();
             } else {
@@ -55,7 +56,12 @@ gmailConnectScene.on("message", async (ctx) => {
         return ctx.scene.leave();
     } else {
         ctx.reply("Successfully authorized");
-        if ((await watchMails(auth))) {
+        const email = await getEmail(auth);
+        if (!email || !(await SetEmail(user.telegramID, email))) {
+            await ctx.reply("Error ocurred, couldn't subscribe");
+            return ctx.scene.leave();
+        }
+        if ((await watchMails(user.telegramID, auth))) {
             await ctx.reply("Subscribed for new emails successfully");
             return ctx.scene.leave();
         } else {
@@ -65,7 +71,22 @@ gmailConnectScene.on("message", async (ctx) => {
     }
 });
 
-async function watchMails(auth: OAuth2Client) {
+async function getEmail(auth: OAuth2Client) {
+    const gmail = google.gmail({ version: "v1", auth });
+    let res;
+    try {
+        res = await gmail.users.getProfile({ userId: "me" });
+    } catch (e) {
+        error(e);
+        return false;
+    }
+    if (res.status !== 200) {
+        return false;
+    }
+    return res.data.emailAddress;
+}
+
+async function watchMails(tgId: IUser["telegramID"], auth: OAuth2Client) {
     const gmail = google.gmail({ version: "v1", auth });
     let res;
     try {
@@ -74,7 +95,6 @@ async function watchMails(auth: OAuth2Client) {
             requestBody: { topicName: process.env.PUB_SUB_TOPIC }
         });
     } catch (e) {
-        console.error(res);
         error(e);
         return false;
     }
@@ -85,6 +105,10 @@ async function watchMails(auth: OAuth2Client) {
     const utcMs = Number.parseInt(res.data.expiration, 10);
     const date = new Date(utcMs);
     console.log(date);
+    const hId = Number.parseInt(res.data.historyId, 10);
+    if (!(await SetHistoryId(tgId, hId))) {
+        return false;
+    }
     return true;
 }
 
