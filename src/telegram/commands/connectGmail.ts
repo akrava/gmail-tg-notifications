@@ -19,12 +19,13 @@ gmailConnectScene.enter(async (ctx) => {
     const obj = await authorizeUser(user.telegramID);
     if (obj !== null) {
         if (obj.authorized) {
+            ctx.reply("");
             ctx.reply("Successfully authorized from cache");
             if ((await watchMails(obj.oauth))) {
-                ctx.reply("Subscribed for new emails successfully");
+                await ctx.reply("Subscribed for new emails successfully");
                 return ctx.scene.leave();
             } else {
-                ctx.reply("Error ocurred, couldn't subscribe");
+                await ctx.reply("Error ocurred, couldn't subscribe");
                 return ctx.scene.leave();
             }
         } else {
@@ -55,10 +56,10 @@ gmailConnectScene.on("message", async (ctx) => {
     } else {
         ctx.reply("Successfully authorized");
         if ((await watchMails(auth))) {
-            ctx.reply("Subscribed for new emails successfully");
+            await ctx.reply("Subscribed for new emails successfully");
             return ctx.scene.leave();
         } else {
-            ctx.reply("Error ocurred, couldn't subscribe");
+            await ctx.reply("Error ocurred, couldn't subscribe");
             return ctx.scene.leave();
         }
     }
@@ -73,6 +74,7 @@ async function watchMails(auth: OAuth2Client) {
             requestBody: { topicName: process.env.PUB_SUB_TOPIC }
         });
     } catch (e) {
+        console.error(res);
         error(e);
         return false;
     }
