@@ -3,6 +3,7 @@ import { FindUserById } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { Middleware } from "telegraf";
 import { google } from "googleapis";
+import { error } from "@service/logging";
 import { authorizeUser, generateUrlToGetToken, getNewToken, IAuthObject } from "@gmail/index";
 import Stage from "telegraf/stage";
 import Scene, { SceneContextMessageUpdate } from "telegraf/scenes/base";
@@ -65,10 +66,16 @@ gmailConnectScene.on("message", async (ctx) => {
 
 async function watchMails(auth: OAuth2Client) {
     const gmail = google.gmail({ version: "v1", auth });
-    const res = await gmail.users.watch({
-        userId: "me",
-        requestBody: { topicName: process.env.PUB_SUB_TOPIC }
-    });
+    let res;
+    try {
+        res = await gmail.users.watch({
+            userId: "me",
+            requestBody: { topicName: process.env.PUB_SUB_TOPIC }
+        });
+    } catch (e) {
+        error(e);
+        return false;
+    }
     console.log(res);
     if (res.status !== 200) {
         return false;
