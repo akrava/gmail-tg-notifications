@@ -82,9 +82,8 @@ async function watchMails(auth: OAuth2Client) {
     if (res.status !== 200) {
         return false;
     }
-    const utcSeconds = Number.parseInt(res.data.expiration, 10);
-    const date = new Date(0);
-    date.setUTCSeconds(utcSeconds);
+    const utcMs = Number.parseInt(res.data.expiration, 10);
+    const date = new Date(utcMs);
     console.log(date);
     return true;
 }
