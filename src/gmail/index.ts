@@ -1,10 +1,10 @@
 import path from "path";
+import { FindUserById, SetToken } from "@controller/user";
 import { OAuth2Client } from "google-auth-library";
 import Express from "express";
 import { google } from "googleapis";
 import { router as pushUpdatesRouter } from "@gmail/pushUpdates";
 import { error } from "@service/logging";
-import { readFileAsync, fileExistAsync, writeFileAsync } from "@service/asyncFs";
 
 export const router = Express.Router();
 
@@ -18,13 +18,15 @@ export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
     const { client_secret, client_id, redirect_uris } = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-    const tokenPath = path.resolve(__dirname, `../../secure/token${tgID}.json`);
+    const user = await FindUserById(tgID);
+    if (!user) {
+        return null;
+    }
     try {
-        if (!(await fileExistAsync(tokenPath))) {
+        if (user.token === "") {
             return { oauth: oAuth2Client, authorized: false };
         } else {
-            const token = (await readFileAsync(tokenPath)).toString();
-            oAuth2Client.setCredentials(JSON.parse(token));
+            oAuth2Client.setCredentials(JSON.parse(user.token));
             return { oauth: oAuth2Client, authorized: true };
         }
     } catch (e) {
@@ -52,9 +54,10 @@ export async function getNewToken(
                 return resolve(null);
             }
             oAuth2Client.setCredentials(token);
-            const tokenPath = path.resolve(__dirname, `../../secure/token${tgID}.json`);
             try {
-                await writeFileAsync(tokenPath, JSON.stringify(token));
+                if (!(await SetToken(tgID, JSON.stringify(token)))) {
+                    throw new Error("Couldn't write token");
+                }
                 resolve(oAuth2Client);
             } catch (err) {
                 resolve(null);
@@ -62,26 +65,3 @@ export async function getNewToken(
         });
     });
 }
-
-// /**
-//  * Lists the labels in the user"s account.
-//  *
-//  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
-//  */
-// function listLabels(auth) {
-//   const gmail = google.gmail({version: "v1", auth});
-//   gmail.users.labels.list({
-//     userId: "me",
-//   }, (err, res) => {
-//     if (err) return console.log("The API returned an error: " + err);
-//     const labels = res.data.labels;
-//     if (labels.length) {
-//       console.log("Labels:");
-//       labels.forEach((label) => {
-//         console.log(`- ${label.name}`);
-//       });
-//     } else {
-//       console.log("No labels found.");
-//     }
-//   });
-// }

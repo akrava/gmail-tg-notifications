@@ -4,12 +4,14 @@ import { error } from "@service/logging";
 export interface ICreateUserInput {
     telegramID: IUser["telegramID"];
     chatsId?: IUser["chatsId"];
+    token?: IUser["token"];
 }
 
 export async function CreateUser(obj: ICreateUserInput) {
     return User.create({
             telegramID: obj.telegramID,
             chatsId: obj.chatsId,
+            token: obj.token
         })
         .then((data: IUser) => {
             return data;
@@ -31,6 +33,11 @@ export async function FindUserById(tgId: IUser["telegramID"]) {
 
 export async function SetChatsId(tgId: IUser["telegramID"], chatsId: IUser["chatsId"]) {
     return User.findOneAndUpdate({ telegramID: tgId }, { $set: { chatsId } }, { upsert: true })
+        .then(() => true).catch((e) => (error(e), false));
+}
+
+export async function SetToken(tgId: IUser["telegramID"], token: IUser["token"]) {
+    return User.findOneAndUpdate({ telegramID: tgId }, { $set: { token } }, { upsert: true })
         .then(() => true).catch((e) => (error(e), false));
 }
 
