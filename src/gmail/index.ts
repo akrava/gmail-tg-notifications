@@ -23,7 +23,7 @@ export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
         return null;
     }
     try {
-        if (user.token === "") {
+        if (user.token === " ") {
             return { oauth: oAuth2Client, authorized: false };
         } else {
             oAuth2Client.setCredentials(JSON.parse(user.token));
