@@ -28,8 +28,18 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     const obj = JSON.parse(message);
     const user = await FindUserByEmail(obj.emailAddress);
     if (user) {
-        const response = await getEmails(obj.emailAddress, obj.historyId);
-        if (response) {
+        let response: string[];
+        try {
+            const resp = await getEmails(obj.emailAddress, obj.historyId);
+            if (resp) {
+                response = resp;
+            }
+        } catch (e) {
+            error(e);
+            res.status(204).send();
+            return;
+        }
+        if (Array.isArray(response)) {
             user.chatsId.forEach((chatId) => {
                 response.forEach((x) => {
                     bot.telegram.sendMessage(chatId, x);
