@@ -90,10 +90,13 @@ export async function getEmails(emailAdress: string, historyId: number) {
     }
     const result: string[] = [];
     console.log("@@@@@@");
-    console.log(res);
+    console.log(JSON.stringify(res));
     console.log("@@@@@@");
     for (const r of res) {
-        r.messagesAdded.forEach((mail) => result.push(mail.message.payload.body.data));
+        r.messagesAdded.forEach((mail) => {
+            const message = Buffer.from(mail.message.raw, "base64").toString("utf-8");
+            result.push(message);
+        });
     }
     if (!(await SetHistoryId(user.telegramID, historyId))) {
         return false;
