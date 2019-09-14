@@ -12,7 +12,7 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema({
     telegramID: { type: Number,   required: true, unique: true },
     chatsId:    { type: [Number], required: true, default: []  },
-    token:      { type: String,   required: true, default: ""  },
+    token:      { type: String,   required: true, default: " " },
     email:      { type: String,   required: true, unique: true },
     historyId:  { type: Number,   required: true, default: 0   }
 });
