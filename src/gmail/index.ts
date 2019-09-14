@@ -120,6 +120,9 @@ function listHistory(
             if (resp.status !== 200) {
                 callback(null, new Error(resp.statusText));
             }
+            console.log("!!!!!!!!!!");
+            console.log(resp);
+            console.log("!!!!!!!!!!");
             result = result.concat(resp.data.history);
             const nextPageToken = resp.data.nextPageToken;
             if (nextPageToken) {
