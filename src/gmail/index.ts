@@ -1,10 +1,11 @@
 import path from "path";
-import { FindUserById, SetToken } from "@controller/user";
+import { FindUserById, SetToken, FindUserByEmail, SetHistoryId } from "@controller/user";
 import { OAuth2Client } from "google-auth-library";
 import Express from "express";
-import { google } from "googleapis";
+import { google, gmail_v1 } from "googleapis";
 import { router as pushUpdatesRouter } from "@gmail/pushUpdates";
 import { error } from "@service/logging";
+import { GaxiosResponse, GaxiosPromise } from "gaxios";
 
 export const router = Express.Router();
 
@@ -64,4 +65,77 @@ export async function getNewToken(
             }
         });
     });
+}
+
+export async function getEmails(emailAdress: string, historyId: number) {
+    const user = await FindUserByEmail(emailAdress);
+    if (!user) {
+        return false;
+    }
+    const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+    const { client_secret, client_id, redirect_uris } = credentials.installed;
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+    if (user.token === " ") {
+        error(new Error("Bad token"));
+        return false;
+    }
+    oAuth2Client.setCredentials(JSON.parse(user.token));
+    const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
+    let res;
+    try {
+        res = await asyncListHistory(gmail, historyId);
+    } catch (e) {
+        error(e);
+        return false;
+    }
+    const result: string[] = [];
+    for (const r of res) {
+        console.log("@@@@@@");
+        console.log(r);
+        r.messagesAdded.forEach((mail) => result.push(mail.message.payload.body.data));
+        console.log("@@@@@@");
+    }
+    if (!(await SetHistoryId(user.telegramID, Number.parseInt(res[res.length - 1].id, 10)))) {
+        return false;
+    }
+    return result;
+}
+
+async function asyncListHistory(gmail: gmail_v1.Gmail, startHistoryId: number) {
+    return new Promise<gmail_v1.Schema$History[]>((resolve, reject) => {
+        listHistory(gmail, startHistoryId, (res, err) => err ? reject(err) : resolve(res));
+    });
+}
+
+function listHistory(
+    gmail: gmail_v1.Gmail,
+    startHistoryId: number,
+    callback: (res: gmail_v1.Schema$History[], err: Error) => void
+) {
+    const getPageOfHistory = function(
+        request: GaxiosPromise<gmail_v1.Schema$ListHistoryResponse>,
+        result: gmail_v1.Schema$History[]
+    ) {
+        request.then(function(resp) {
+            if (resp.status !== 200) {
+                callback(null, new Error(resp.statusText));
+            }
+            result = result.concat(resp.data.history);
+            const nextPageToken = resp.data.nextPageToken;
+            if (nextPageToken) {
+                request = gmail.users.history.list({
+                    "userId": "me",
+                    "startHistoryId": startHistoryId.toString(),
+                    "pageToken": nextPageToken
+                });
+                getPageOfHistory(request, result);
+            } else {
+                callback(result, null);
+            }
+        });
+    };
+    const req = gmail.users.history.list({
+        "startHistoryId": startHistoryId.toString()
+    });
+    getPageOfHistory(req, []);
 }
