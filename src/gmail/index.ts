@@ -135,6 +135,7 @@ function listHistory(
         });
     };
     const req = gmail.users.history.list({
+        "userId": "me",
         "startHistoryId": startHistoryId.toString()
     });
     getPageOfHistory(req, []);
