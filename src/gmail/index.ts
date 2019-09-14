@@ -83,7 +83,7 @@ export async function getEmails(emailAdress: string, historyId: number) {
     const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
     let res;
     try {
-        res = await asyncListHistory(gmail, historyId);
+        res = await asyncListHistory(gmail, user.historyId);
     } catch (e) {
         error(e);
         return false;
@@ -95,7 +95,7 @@ export async function getEmails(emailAdress: string, historyId: number) {
     for (const r of res) {
         r.messagesAdded.forEach((mail) => result.push(mail.message.payload.body.data));
     }
-    if (!(await SetHistoryId(user.telegramID, Number.parseInt(res[res.length - 1].id, 10)))) {
+    if (!(await SetHistoryId(user.telegramID, historyId))) {
         return false;
     }
     return result;
@@ -120,10 +120,7 @@ function listHistory(
             if (resp.status !== 200) {
                 callback(null, new Error(resp.statusText));
             }
-            console.log("!!!!!!!!!!");
-            console.log(resp);
-            console.log("!!!!!!!!!!");
-            result = result.concat(resp.data.history);
+            result = result.concat(resp.data.history || []);
             const nextPageToken = resp.data.nextPageToken;
             if (nextPageToken) {
                 request = gmail.users.history.list({
