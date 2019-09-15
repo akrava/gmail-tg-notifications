@@ -171,6 +171,7 @@ async function retriveAttachment(gmail: gmail_v1.Gmail, messageId: string, attId
             throw new Error(resp.statusText);
         }
     } catch (e) {
+        console.log("HERE an error!!!");
         error(e);
         return false;
     }
