@@ -156,20 +156,25 @@ async function retriveAttachment(gmail: gmail_v1.Gmail, messageId: string, attId
 
 async function retriveEmailsFromIds(gmail: gmail_v1.Gmail, arr: string[]) {
     const result = [];
-    try {
-        for (const id of arr) {
-            const resp = await gmail.users.messages.get({ userId: "me", id });
-            if (resp.status === 404) {
+    for (const id of arr) {
+        let resp;
+        try {
+            resp = await gmail.users.messages.get({ userId: "me", id });
+        } catch (e) {
+            error(e);
+            if (e.message === "Not Found") {
                 continue;
-            } else if (resp.status !== 200) {
-                console.log(resp.status );
-                throw new Error(resp.statusText);
+            } else {
+                return false;
             }
-            result.push(resp.data);
         }
-    } catch (e) {
-        error(e);
-        return false;
+        if (resp.status === 404) {
+            continue;
+        } else if (resp.status !== 200) {
+            console.log(resp.status);
+            throw new Error(resp.statusText);
+        }
+        result.push(resp.data);
     }
     return result;
 }
