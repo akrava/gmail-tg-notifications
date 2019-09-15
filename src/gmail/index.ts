@@ -6,6 +6,7 @@ import { router as pushUpdatesRouter } from "@gmail/pushUpdates";
 import { error } from "@service/logging";
 import { GaxiosPromise } from "gaxios";
 import htmlToText from "html-to-text";
+import { toFormatedString } from "@service/date";
 
 export const router = Express.Router();
 
@@ -115,6 +116,21 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             const data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
             message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
             message = htmlToText.fromString(message);
+        }
+        if (mail.payload.headers) {
+            const date = mail.payload.headers.filter((x) => x.name === "Date");
+            const from = mail.payload.headers.filter((x) => x.name === "From");
+            const subject = mail.payload.headers.filter((x) => x.name === "Subject");
+            if (subject[0]) {
+                message = `Subject: ${subject[0].value}\n\n\n\n` + message;
+            }
+            if (date[0]) {
+                const dateVal = new Date(date[0].value);
+                message = `Date: ${toFormatedString(dateVal)}\n` + message;
+            }
+            if (from[0]) {
+                message = `From: ${from[0].value}\n` + message;
+            }
         }
         const attachments: IAttachmentObject[] = [];
         if (mail.payload && mail.payload.parts) {
