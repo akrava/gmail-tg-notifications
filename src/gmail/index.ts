@@ -107,6 +107,9 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const result = [];
     for (const mail of messagesDocuments) {
+        console.log(mail.id, "!!!!!!!!!!!!!!");
+        console.log(JSON.stringify(mail));
+        console.log("!!!!!!!!!!!!!!");
         let message = "";
         if (mail.payload && mail.payload.body && mail.payload.body.data) {
             message = base64ToString(mail.payload.body.data);
@@ -132,6 +135,9 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
                 message = `From: ${from[0].value}\n` + message;
             }
         }
+        console.log("AAAAAAAAAAAAA");
+        console.log(mail.payload.parts);
+        console.log("AAAAAAAAAAAAA");
         const attachments: IAttachmentObject[] = [];
         if (mail.payload && mail.payload.parts) {
             for (const part of mail.payload.parts) {
@@ -151,6 +157,9 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
                 }
             }
         }
+        console.log("@@@@@@@@@@@@@@@@@@@@@");
+        console.log(message, attachments);
+        console.log("@@@@@@@@@@@@@@@@@@@@@");
         result.push({ message, attachments });
     }
     if (!(await SetHistoryId(user.telegramID, historyId))) {
@@ -171,7 +180,6 @@ async function retriveAttachment(gmail: gmail_v1.Gmail, messageId: string, attId
             throw new Error(resp.statusText);
         }
     } catch (e) {
-        console.log("HERE an error!!!");
         error(e);
         return false;
     }
