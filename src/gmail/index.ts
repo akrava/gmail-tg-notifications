@@ -15,6 +15,10 @@ const SCOPES = [ "https://www.googleapis.com/auth/gmail.readonly" ];
 
 export interface IAuthObject { oauth: OAuth2Client; authorized: boolean; }
 
+export interface IMailObject { message: string; attachments: IAttachmentObject[]; }
+
+export interface IAttachmentObject { name: string; data: string; }
+
 export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
     const { client_secret, client_id, redirect_uris } = credentials.installed;
@@ -67,7 +71,7 @@ export async function getNewToken(
     });
 }
 
-export async function getEmails(emailAdress: string, historyId: number) {
+export async function getEmails(emailAdress: string, historyId: number): Promise<false | IMailObject[]> {
     const user = await FindUserByEmail(emailAdress);
     if (!user) {
         return false;
@@ -88,17 +92,72 @@ export async function getEmails(emailAdress: string, historyId: number) {
         error(e);
         return false;
     }
-    const result: string[] = [];
-    console.log("@@@@@@");
-    console.log(JSON.stringify(res));
-    console.log("@@@@@@");
+    const emailsId: string[] = [];
     for (const r of res) {
         r.messagesAdded.forEach((mail) => {
-            const message = Buffer.from(mail.message.raw, "base64").toString("utf-8");
-            result.push(message);
+            emailsId.push(mail.message.id);
         });
     }
+    const messagesDocuments = await retriveEmailsFromIds(gmail, emailsId);
+    if (!messagesDocuments) {
+        return false;
+    }
+    const result = [];
+    for (const mail of messagesDocuments) {
+        const message = Buffer.from(mail.raw, "base64").toString("utf-8");
+        const attachments: IAttachmentObject[] = [];
+        if (mail.payload && mail.payload.parts) {
+            for (const part of mail.payload.parts) {
+                if (part.filename) {
+                    if (part.body.data) {
+                        const data = Buffer.from(part.body.data, "base64").toString("utf-8");
+                        attachments.push({ name: part.filename, data });
+                    } else {
+                        const attId = part.body.attachmentId;
+                        const attachment = await retriveAttachment(gmail, mail.id, attId);
+                        if (!attachment) {
+                            return false;
+                        }
+                        const data = Buffer.from(attachment.data, "base64").toString("utf-8");
+                        attachments.push({ name: part.filename, data });
+                    }
+                }
+            }
+        }
+        result.push({ message, attachments });
+    }
     if (!(await SetHistoryId(user.telegramID, historyId))) {
+        return false;
+    }
+    return result;
+}
+
+async function retriveAttachment(gmail: gmail_v1.Gmail, messageId: string, attId: string) {
+    let resp;
+    try {
+        resp = await gmail.users.messages.attachments.get({ userId: "me", messageId, id: attId });
+        if (resp.status !== 200) {
+            throw new Error(resp.statusText);
+        }
+    } catch (e) {
+        error(e);
+        return false;
+    }
+    return resp.data;
+}
+
+async function retriveEmailsFromIds(gmail: gmail_v1.Gmail, arr: string[]) {
+    const result = [];
+    try {
+        for (const id of arr) {
+            const resp = await gmail.users.messages.get({ userId: "me", id });
+            if (resp.status !== 200) {
+                throw new Error(resp.statusText);
+            }
+            result.push(resp.data);
+        }
+    } catch (e) {
+        error(e);
         return false;
     }
     return result;
