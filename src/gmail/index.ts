@@ -94,9 +94,11 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const emailsId: string[] = [];
     for (const r of res) {
-        r.messagesAdded.forEach((mail) => {
-            emailsId.push(mail.message.id);
-        });
+        if (r.messagesAdded) {
+            r.messagesAdded.forEach((mail) => {
+                emailsId.push(mail.message.id);
+            });
+        }
     }
     const messagesDocuments = await retriveEmailsFromIds(gmail, emailsId);
     if (!messagesDocuments) {
