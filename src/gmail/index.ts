@@ -107,16 +107,16 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const result = [];
     for (const mail of messagesDocuments) {
-        console.log(mail.id, "!!!!!!!!!!!!!!");
-        console.log(JSON.stringify(mail));
-        console.log("!!!!!!!!!!!!!!");
         let message = "";
-        if (mail.payload && mail.payload.body && mail.payload.body.data) {
-            message = base64ToString(mail.payload.body.data);
-        } else if (mail.raw) {
-            message = base64ToString(mail.raw);
-        } else if (mail.payload.parts) {
-            const data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
+        if (mail.payload.parts) {
+            let data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
+            if (data.length === 0) {
+                for (const part of mail.payload.parts) {
+                    if (part.parts) {
+                        data = data.concat(part.parts.filter((x) => x.mimeType === "text/html"));
+                    }
+                }
+            }
             message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
             message = htmlToText.fromString(message);
         }
@@ -135,9 +135,6 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
                 message = `From: ${from[0].value}\n` + message;
             }
         }
-        console.log("AAAAAAAAAAAAA");
-        console.log(mail.payload.parts);
-        console.log("AAAAAAAAAAAAA");
         const attachments: IAttachmentObject[] = [];
         if (mail.payload && mail.payload.parts) {
             for (const part of mail.payload.parts) {
@@ -158,7 +155,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             }
         }
         console.log("@@@@@@@@@@@@@@@@@@@@@");
-        console.log(message);
+        console.log(attachments);
         console.log("@@@@@@@@@@@@@@@@@@@@@", mail.id);
         result.push({ message, attachments });
     }
