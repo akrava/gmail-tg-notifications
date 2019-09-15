@@ -1,11 +1,11 @@
-import path from "path";
 import { FindUserById, SetToken, FindUserByEmail, SetHistoryId } from "@controller/user";
 import { OAuth2Client } from "google-auth-library";
 import Express from "express";
 import { google, gmail_v1 } from "googleapis";
 import { router as pushUpdatesRouter } from "@gmail/pushUpdates";
 import { error } from "@service/logging";
-import { GaxiosResponse, GaxiosPromise } from "gaxios";
+import { GaxiosPromise } from "gaxios";
+import htmlToText from "html-to-text";
 
 export const router = Express.Router();
 
@@ -106,7 +106,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const result = [];
     for (const mail of messagesDocuments) {
-        let message;
+        let message = "";
         if (mail.payload && mail.payload.body && mail.payload.body.data) {
             message = base64ToString(mail.payload.body.data);
         } else if (mail.raw) {
@@ -114,9 +114,8 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
         } else if (mail.payload.parts) {
             const data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
             message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
+            message = htmlToText.fromString(message);
         }
-        console.log("@@@@@@@@@@");
-        console.log(message);
         const attachments: IAttachmentObject[] = [];
         if (mail.payload && mail.payload.parts) {
             for (const part of mail.payload.parts) {
