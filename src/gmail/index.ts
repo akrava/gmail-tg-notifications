@@ -159,7 +159,9 @@ async function retriveEmailsFromIds(gmail: gmail_v1.Gmail, arr: string[]) {
     try {
         for (const id of arr) {
             const resp = await gmail.users.messages.get({ userId: "me", id });
-            if (resp.status !== 200) {
+            if (resp.status === 404) {
+                continue;
+            } else if (resp.status !== 200) {
                 throw new Error(resp.statusText);
             }
             result.push(resp.data);
