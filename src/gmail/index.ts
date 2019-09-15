@@ -100,18 +100,13 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             });
         }
     }
-    console.log("!!!!!!!!!");
-    console.log(emailsId);
-    console.log("!!!!!!!!!");
     const messagesDocuments = await retriveEmailsFromIds(gmail, emailsId);
     if (!messagesDocuments) {
         return false;
     }
-    console.log("@@@@@");
-    console.log(JSON.stringify(messagesDocuments));
-    console.log("@@@@@");
     const result = [];
     for (const mail of messagesDocuments) {
+        console.log(JSON.stringify(mail));
         const message = Buffer.from(mail.raw, "base64").toString("utf-8");
         const attachments: IAttachmentObject[] = [];
         if (mail.payload && mail.payload.parts) {
