@@ -162,6 +162,7 @@ async function retriveEmailsFromIds(gmail: gmail_v1.Gmail, arr: string[]) {
             if (resp.status === 404) {
                 continue;
             } else if (resp.status !== 200) {
+                console.log(resp.status );
                 throw new Error(resp.statusText);
             }
             result.push(resp.data);
