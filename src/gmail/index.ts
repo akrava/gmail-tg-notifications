@@ -158,8 +158,8 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             }
         }
         console.log("@@@@@@@@@@@@@@@@@@@@@");
-        console.log(message, attachments);
-        console.log("@@@@@@@@@@@@@@@@@@@@@");
+        console.log(message);
+        console.log("@@@@@@@@@@@@@@@@@@@@@", mail.id);
         result.push({ message, attachments });
     }
     if (!(await SetHistoryId(user.telegramID, historyId))) {
