@@ -106,8 +106,13 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const result = [];
     for (const mail of messagesDocuments) {
-        console.log(JSON.stringify(mail));
-        const message = Buffer.from(mail.raw, "base64").toString("utf-8");
+        let source;
+        if (mail.payload && mail.payload.body && mail.payload.body.data) {
+            source = mail.payload.body.data;
+        } else if (mail.raw) {
+            source = mail.raw;
+        }
+        const message = Buffer.from(source, "base64").toString("utf-8");
         const attachments: IAttachmentObject[] = [];
         if (mail.payload && mail.payload.parts) {
             for (const part of mail.payload.parts) {
