@@ -106,15 +106,17 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const result = [];
     for (const mail of messagesDocuments) {
-        let source = "";
+        let message;
         if (mail.payload && mail.payload.body && mail.payload.body.data) {
-            source = mail.payload.body.data;
+            message = base64ToString(mail.payload.body.data);
         } else if (mail.raw) {
-            source = mail.raw;
+            message = base64ToString(mail.raw);
+        } else if (mail.payload.parts) {
+            const data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
+            message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
         }
         console.log("@@@@@@@@@@");
-        console.log(source);
-        const message = Buffer.from(source, "base64").toString("utf-8");
+        console.log(message);
         const attachments: IAttachmentObject[] = [];
         if (mail.payload && mail.payload.parts) {
             for (const part of mail.payload.parts) {
@@ -140,6 +142,10 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
         return false;
     }
     return result;
+}
+
+function base64ToString(x: string) {
+    return Buffer.from(x, "base64").toString("utf-8");
 }
 
 async function retriveAttachment(gmail: gmail_v1.Gmail, messageId: string, attId: string) {

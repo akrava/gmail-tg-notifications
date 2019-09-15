@@ -40,10 +40,14 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         }
         for (const chatId of user.chatsId) {
             response.forEach((x) => {
-                bot.telegram.sendMessage(chatId, x.message);
-                x.attachments.forEach((y) => {
-                    bot.telegram.sendDocument(chatId, { filename: y.name, source: y.data });
-                });
+                if (!x.message) {
+                    error(new Error("empty message"));
+                } else {
+                    bot.telegram.sendMessage(chatId, x.message);
+                    x.attachments.forEach((y) => {
+                        bot.telegram.sendDocument(chatId, { filename: y.name, source: y.data });
+                    });
+                }
             });
         }
     }
