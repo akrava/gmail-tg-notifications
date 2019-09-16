@@ -7,6 +7,7 @@ import { error } from "@service/logging";
 import { GaxiosPromise } from "gaxios";
 import htmlToText from "html-to-text";
 import { toFormatedString } from "@service/date";
+import { IUser } from "@model/user";
 
 export const router = Express.Router();
 
@@ -70,6 +71,47 @@ export async function getNewToken(
             }
         });
     });
+}
+
+export async function getEmailAdress(auth: OAuth2Client) {
+    const gmail = google.gmail({ version: "v1", auth });
+    let res;
+    try {
+        res = await gmail.users.getProfile({ userId: "me" });
+    } catch (e) {
+        error(e);
+        return false;
+    }
+    if (res.status !== 200) {
+        return false;
+    }
+    return res.data.emailAddress;
+}
+
+export async function watchMails(tgId: IUser["telegramID"], auth: OAuth2Client) {
+    const gmail = google.gmail({ version: "v1", auth });
+    let res;
+    try {
+        res = await gmail.users.watch({
+            userId: "me",
+            requestBody: { topicName: process.env.PUB_SUB_TOPIC }
+        });
+    } catch (e) {
+        error(e);
+        return false;
+    }
+    console.log(res);
+    if (res.status !== 200) {
+        return false;
+    }
+    const utcMs = Number.parseInt(res.data.expiration, 10);
+    const date = new Date(utcMs);
+    console.log(date);
+    const hId = Number.parseInt(res.data.historyId, 10);
+    if (!(await SetHistoryId(tgId, hId))) {
+        return false;
+    }
+    return true;
 }
 
 export async function getEmails(emailAdress: string, historyId: number): Promise<false | IMailObject[]> {

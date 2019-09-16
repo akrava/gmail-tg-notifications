@@ -1,14 +1,10 @@
-import https from "https";
-import { FindUserById, SetEmail, SetHistoryId } from "@controller/user";
+import { FindUserById, SetEmail } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { Middleware } from "telegraf";
-import { google } from "googleapis";
-import { error } from "@service/logging";
 import { authorizeUser, generateUrlToGetToken, getNewToken, IAuthObject } from "@gmail/index";
 import Stage from "telegraf/stage";
 import Scene, { SceneContextMessageUpdate } from "telegraf/scenes/base";
-import { OAuth2Client } from "google-auth-library";
-import { IUser } from "@model/user";
+import { getEmailAdress, watchMails } from "@gmail/index";
 
 const gmailConnectScene = new Scene("connect_gmail");
 gmailConnectScene.enter(async (ctx) => {
@@ -56,7 +52,7 @@ gmailConnectScene.on("message", async (ctx) => {
         return ctx.scene.leave();
     } else {
         ctx.reply("Successfully authorized");
-        const email = await getEmail(auth);
+        const email = await getEmailAdress(auth);
         if (!email || !(await SetEmail(user.telegramID, email))) {
             await ctx.reply("Error ocurred, couldn't subscribe");
             return ctx.scene.leave();
@@ -70,47 +66,6 @@ gmailConnectScene.on("message", async (ctx) => {
         }
     }
 });
-
-async function getEmail(auth: OAuth2Client) {
-    const gmail = google.gmail({ version: "v1", auth });
-    let res;
-    try {
-        res = await gmail.users.getProfile({ userId: "me" });
-    } catch (e) {
-        error(e);
-        return false;
-    }
-    if (res.status !== 200) {
-        return false;
-    }
-    return res.data.emailAddress;
-}
-
-async function watchMails(tgId: IUser["telegramID"], auth: OAuth2Client) {
-    const gmail = google.gmail({ version: "v1", auth });
-    let res;
-    try {
-        res = await gmail.users.watch({
-            userId: "me",
-            requestBody: { topicName: process.env.PUB_SUB_TOPIC }
-        });
-    } catch (e) {
-        error(e);
-        return false;
-    }
-    console.log(res);
-    if (res.status !== 200) {
-        return false;
-    }
-    const utcMs = Number.parseInt(res.data.expiration, 10);
-    const date = new Date(utcMs);
-    console.log(date);
-    const hId = Number.parseInt(res.data.historyId, 10);
-    if (!(await SetHistoryId(tgId, hId))) {
-        return false;
-    }
-    return true;
-}
 
 export const stage = new Stage([gmailConnectScene]);
 stage.command("cancel", Stage.leave());

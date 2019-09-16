@@ -2,8 +2,8 @@ import Express from "express";
 import bodyParser from "body-parser";
 import { OAuth2Client } from "google-auth-library";
 import { error } from "@service/logging";
-import { getEmails, IMailObject } from "@gmail/index";
-import { FindUserByEmail } from "@controller/user";
+import { getEmails, IMailObject, authorizeUser, watchMails } from "@gmail/index";
+import { FindUserByEmail, FindAll } from "@controller/user";
 import { bot } from "@telegram/index";
 
 const jsonBodyParser = bodyParser.json();
@@ -43,7 +43,11 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
                 if (!x.message) {
                     error(new Error("empty message"));
                 } else {
-                    const sent = await bot.telegram.sendMessage(chatId, x.message);
+                    const sent = await bot.telegram.sendMessage(
+                        chatId,
+                        x.message,
+                        { disable_web_page_preview: true }
+                    );
                     x.attachments.forEach((y) => {
                         bot.telegram.sendDocument(
                             chatId,
@@ -52,6 +56,30 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
                         );
                     });
                 }
+            }
+        }
+    }
+    res.status(204).send();
+});
+
+router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
+    const users = await FindAll();
+    if (!Array.isArray(users)) {
+        res.status(204).send();
+        return;
+    }
+    for (const user of users) {
+        const obj = await authorizeUser(user.telegramID);
+        const tgId = user.telegramID.toString();
+        if (obj !== null) {
+            if (obj.authorized) {
+                if (!(await watchMails(user.telegramID, obj.oauth))) {
+                    error(new Error("couldn't watch mails"));
+                    bot.telegram.sendMessage(tgId, "Try to renew gmail subscription");
+                }
+            } else {
+                error(new Error("bad token, not authorized"));
+                bot.telegram.sendMessage(tgId, "Renew gmail subscription");
             }
         }
     }

@@ -35,6 +35,10 @@ export async function FindUserById(tgId: IUser["telegramID"]) {
         });
 }
 
+export async function FindAll() {
+    return User.find({}).then((x) => x).catch((e) => (error(e), false));
+}
+
 export async function FindUserByEmail(email: IUser["email"]) {
     return User.findOne({ email })
         .then((data: IUser) => {
