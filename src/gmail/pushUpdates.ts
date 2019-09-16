@@ -1,7 +1,7 @@
 import Express from "express";
 import bodyParser from "body-parser";
 import { OAuth2Client } from "google-auth-library";
-import { error } from "@service/logging";
+import { error, info } from "@service/logging";
 import { getEmails, IMailObject, authorizeUser, watchMails } from "@gmail/index";
 import { FindUserByEmail, FindAll } from "@controller/user";
 import { bot } from "@telegram/index";
@@ -76,6 +76,8 @@ router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
                 if (!(await watchMails(user.telegramID, obj.oauth))) {
                     error(new Error("couldn't watch mails"));
                     bot.telegram.sendMessage(tgId, "Try to renew gmail subscription");
+                } else {
+                    info(`Successfully update subscription for ${tgId}`);
                 }
             } else {
                 error(new Error("bad token, not authorized"));
