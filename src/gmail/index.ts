@@ -18,7 +18,7 @@ export interface IAuthObject { oauth: OAuth2Client; authorized: boolean; }
 
 export interface IMailObject { message: string; attachments: IAttachmentObject[]; }
 
-export interface IAttachmentObject { name: string; data: string; }
+export interface IAttachmentObject { name: string; data: Buffer; }
 
 export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
@@ -140,7 +140,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             for (const part of mail.payload.parts) {
                 if (part.filename) {
                     if (part.body.data) {
-                        const data = Buffer.from(part.body.data, "base64").toString("utf-8");
+                        const data = Buffer.from(part.body.data, "base64");
                         attachments.push({ name: part.filename, data });
                     } else {
                         const attId = part.body.attachmentId;
@@ -148,7 +148,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
                         if (!attachment) {
                             return false;
                         }
-                        const data = Buffer.from(attachment.data, "base64").toString("utf-8");
+                        const data = Buffer.from(attachment.data, "base64");
                         attachments.push({ name: part.filename, data });
                     }
                 }

@@ -47,7 +47,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
                     x.attachments.forEach((y) => {
                         bot.telegram.sendDocument(
                             chatId,
-                            { filename: y.name, source: Buffer.from(y.data) },
+                            { filename: y.name, source: y.data },
                             { reply_to_message_id: sent.message_id }
                         );
                     });
