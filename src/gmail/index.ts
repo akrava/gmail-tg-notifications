@@ -94,7 +94,10 @@ export async function watchMails(tgId: IUser["telegramID"], auth: OAuth2Client) 
     try {
         res = await gmail.users.watch({
             userId: "me",
-            requestBody: { topicName: process.env.PUB_SUB_TOPIC }
+            requestBody: {
+                topicName: process.env.PUB_SUB_TOPIC,
+                labelIds: ["INBOX"]
+            }
         });
     } catch (e) {
         error(e);
@@ -271,6 +274,7 @@ function listHistory(
             if (nextPageToken) {
                 request = gmail.users.history.list({
                     "userId": "me",
+                    "labelId": "INBOX",
                     "startHistoryId": startHistoryId.toString(),
                     "pageToken": nextPageToken
                 });
@@ -282,6 +286,7 @@ function listHistory(
     };
     const req = gmail.users.history.list({
         "userId": "me",
+        "labelId": "INBOX",
         "startHistoryId": startHistoryId.toString()
     });
     getPageOfHistory(req, []);
