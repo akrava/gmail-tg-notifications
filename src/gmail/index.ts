@@ -152,19 +152,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const result = [];
     for (const mail of messagesDocuments) {
-        let message = "";
-        if (mail.payload.parts) {
-            let data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
-            if (data.length === 0) {
-                for (const part of mail.payload.parts) {
-                    if (part.parts) {
-                        data = data.concat(part.parts.filter((x) => x.mimeType === "text/html"));
-                    }
-                }
-            }
-            message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
-            message = htmlToText.fromString(message);
-        }
+        let message = getTextOfEmailMessage(mail);
         if (mail.payload.headers) {
             const date = mail.payload.headers.filter((x) => x.name === "Date");
             const from = mail.payload.headers.filter((x) => x.name === "From");
@@ -205,6 +193,27 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
         return false;
     }
     return result;
+}
+
+function getTextOfEmailMessage(mail: gmail_v1.Schema$Message) {
+    if (mail.payload && mail.payload.parts) {
+        return getTextOfEmailMessageHelper(mail.payload.parts);
+    }
+}
+
+function getTextOfEmailMessageHelper(mailParts: gmail_v1.Schema$MessagePart[]) {
+    const text = "";
+    if (Array.isArray(mailParts)) {
+        const data = mailParts.filter((x) => x.mimeType === "text/html");
+        const message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
+        text.concat(htmlToText.fromString(message));
+        for (const part of mailParts) {
+            if (part.parts) {
+                text.concat("\n", getTextOfEmailMessageHelper(part.parts));
+            }
+        }
+    }
+    return text;
 }
 
 function base64ToString(x: string) {
