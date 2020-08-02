@@ -1,6 +1,6 @@
-import { ContextMessageUpdate, Middleware } from "telegraf";
+import { Context, Middleware } from "telegraf";
 
-const getId: Middleware<ContextMessageUpdate> = async function(ctx) {
+const getId: Middleware<Context> = async function(ctx) {
     ctx.reply(ctx.chat.id.toString());
 };
 

@@ -1,5 +1,5 @@
 declare module "telegraf/scenes/base" {
-    import { Middleware, Composer, ContextMessageUpdate } from "telegraf";
+    import { Middleware, Composer, Context } from "telegraf";
 
     export interface SceneContextOptions {
         sessionName: string;
@@ -33,7 +33,7 @@ declare module "telegraf/scenes/base" {
         leave: () => Promise<any>
     }
 
-    export interface SceneContextMessageUpdate extends ContextMessageUpdate {
+    export interface SceneContextMessageUpdate extends Context {
         scene: SceneContext<this>
     }
 

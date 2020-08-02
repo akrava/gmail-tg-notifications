@@ -1,7 +1,7 @@
-import { ContextMessageUpdate } from "telegraf";
+import { Context } from "telegraf";
 import { FindUserById } from "@controller/user";
 
-export async function checkUser(ctx: ContextMessageUpdate) {
+export async function checkUser(ctx: Context) {
     if (ctx.chat.type !== "private") {
         ctx.reply("Use private chat.");
         return false;

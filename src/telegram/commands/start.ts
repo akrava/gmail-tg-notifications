@@ -1,7 +1,7 @@
 import { CreateUser, FindUserById } from "@controller/user";
-import { ContextMessageUpdate, Middleware } from "telegraf";
+import { Middleware, Context } from "telegraf";
 
-const start: Middleware<ContextMessageUpdate> = async function(ctx) {
+const start: Middleware<Context> = async function(ctx) {
     if (ctx.chat.type === "private") {
         const user = await FindUserById(ctx.chat.id);
         if (user === false) {

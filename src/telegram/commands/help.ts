@@ -1,6 +1,6 @@
-import { ContextMessageUpdate, Middleware } from "telegraf";
+import { Context, Middleware } from "telegraf";
 
-const help: Middleware<ContextMessageUpdate> = async function(ctx) {
+const help: Middleware<Context> = async function(ctx) {
     ctx.reply(
         "Tap /start to get started.\n" +
         "Tap /connect_gmail to subcribe for new emails.\n" +
