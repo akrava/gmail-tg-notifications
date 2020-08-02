@@ -1,6 +1,7 @@
 // from https://github.com/mnb3000/telegraf
 declare module "telegraf/stage" {
-    import { Middleware, Composer, ContextMessageUpdate } from "telegraf";
+    import { Middleware, Composer } from "telegraf";
+    import { MiddlewareFn } from 'telegraf/typings/composer'
     import Scene, { SceneContextOptions, SceneContextMessageUpdate } from "telegraf/scenes/base";
     
     export type StageOptions = SceneContextOptions;
@@ -10,7 +11,7 @@ declare module "telegraf/stage" {
     
         register: (...scenes: Scene<TContext>[]) => this;
     
-        middleware: () => Middleware<TContext>;
+        middleware: () => MiddlewareFn<TContext>;
     
         static enter: (sceneId: string, initialState?: object, silent?: boolean) => Middleware<SceneContextMessageUpdate>;
     
