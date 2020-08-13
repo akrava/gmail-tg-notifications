@@ -17,7 +17,7 @@ bot.start(startCb);
 bot.command("connect_gmail", connectGmailCb);
 bot.command("set_chats", setChatsId);
 bot.command("get_id", getId);
-bot.command("delte_token", deleteTokenCb);
+bot.command("delete_token", deleteTokenCb);
 bot.help(help);
 
 bot.catch((err: Error) => error(err));
