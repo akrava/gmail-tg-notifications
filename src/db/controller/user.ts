@@ -69,6 +69,11 @@ export async function SetEmail(tgId: IUser["telegramID"], email: IUser["email"])
         .then(() => true).catch((e) => (error(e), false));
 }
 
+export async function DeleteCredentials(tgId: IUser["telegramID"]) {
+    return User.findOneAndUpdate({ telegramID: tgId }, { $set: {token: " ", historyId: 0} }, { upsert: true })
+        .then(() => true).catch((e) => (error(e), false));
+}
+
 export async function DeleteUser(tgId: IUser["telegramID"]) {
     return User.deleteOne({ telegramID: tgId })
         .then((res) => {

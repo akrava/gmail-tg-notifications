@@ -16,8 +16,7 @@ gmailConnectScene.enter(async (ctx) => {
     const obj = await authorizeUser(user.telegramID);
     if (obj !== null) {
         if (obj.authorized) {
-            ctx.reply("");
-            ctx.reply("Successfully authorized from cache");
+            await ctx.reply("Successfully authorized from cache");
             if ((await watchMails(user.telegramID, obj.oauth))) {
                 await ctx.reply("Subscribed for new emails successfully");
                 return ctx.scene.leave();
@@ -27,10 +26,9 @@ gmailConnectScene.enter(async (ctx) => {
             }
         } else {
             const url = generateUrlToGetToken(obj.oauth);
-            ctx.reply("");
-            ctx.reply("You need to authorize at gmail. Open link below to get token. To cancel tap /cancel");
+            await ctx.reply("You need to authorize at gmail. Open link below to get token. To cancel tap /cancel");
             ctx.reply(url);
-            ctx.reply("Enter token:");
+            await ctx.reply("Enter token:");
             ctx.scene.session.state = obj;
         }
     } else {

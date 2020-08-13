@@ -88,6 +88,24 @@ export async function getEmailAdress(auth: OAuth2Client) {
     return res.data.emailAddress;
 }
 
+export async function stopNotifications(auth: OAuth2Client) {
+    const gmail = google.gmail({ version: "v1", auth });
+    let res;
+    try {
+        res = await gmail.users.stop({
+            userId: "me"
+        });
+    } catch (e) {
+        error(e);
+        return false;
+    }
+    console.log(res);
+    if (res.status !== 200 && res.status !== 204) {
+        return false;
+    }
+    return true;
+}
+
 export async function watchMails(tgId: IUser["telegramID"], auth: OAuth2Client) {
     const gmail = google.gmail({ version: "v1", auth });
     let res;
