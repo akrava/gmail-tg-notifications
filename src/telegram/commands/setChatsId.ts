@@ -3,6 +3,7 @@ import { Context, Middleware } from "telegraf";
 import { SetChatsId as SetChatsIdController } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { error } from "@service/logging";
+import { BotCommand } from "telegraf/typings/telegram-types";
 
 const setChatsId: Middleware<Context> = async function(ctx) {
     const user = await checkUser(ctx);
@@ -52,6 +53,11 @@ const setChatsId: Middleware<Context> = async function(ctx) {
     } else {
         ctx.reply("error ocurred");
     }
+};
+
+export const desrciption: BotCommand = {
+    command: "set_chats",
+    description: "Specify list of IDs where to send emails"
 };
 
 export default setChatsId;

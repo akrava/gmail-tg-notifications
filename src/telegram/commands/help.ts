@@ -1,4 +1,5 @@
 import { Context, Middleware } from "telegraf";
+import { BotCommand } from "telegraf/typings/telegram-types";
 
 const help: Middleware<Context> = async function(ctx) {
     ctx.reply(
@@ -13,6 +14,11 @@ const help: Middleware<Context> = async function(ctx) {
         "Chats id you can get here: @userinfobot\n" +
         "/get_id to get id of group chat"
     );
+};
+
+export const desrciption: BotCommand = {
+    command: "help",
+    description: "How use this bot"
 };
 
 export default help;

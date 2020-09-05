@@ -2,6 +2,7 @@ import { Context, Middleware } from "telegraf";
 import { DeleteCredentials } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { authorizeUser, stopNotifications } from "@gmail/index";
+import { BotCommand } from "telegraf/typings/telegram-types";
 
 
 const deleteToken: Middleware<Context> = async function(ctx) {
@@ -29,6 +30,11 @@ const deleteToken: Middleware<Context> = async function(ctx) {
     } else {
         ctx.reply("error ocurred");
     }
+};
+
+export const desrciption: BotCommand = {
+    command: "delete_token",
+    description: "Stop watching your email and delete Gmail token"
 };
 
 export default deleteToken;

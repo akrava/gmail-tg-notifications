@@ -5,6 +5,7 @@ import { authorizeUser, generateUrlToGetToken, getNewToken, IAuthObject } from "
 import Stage from "telegraf/stage";
 import Scene, { SceneContextMessageUpdate } from "telegraf/scenes/base";
 import { getEmailAdress, watchMails } from "@gmail/index";
+import { BotCommand } from "telegraf/typings/telegram-types";
 
 const gmailConnectScene = new Scene("connect_gmail");
 gmailConnectScene.enter(async (ctx) => {
@@ -75,6 +76,11 @@ const connectGmail: Middleware<SceneContextMessageUpdate> = async function(ctx) 
     if (user !== false) {
         ctx.scene.enter("connect_gmail");
     }
+};
+
+export const desrciption: BotCommand = {
+    command: "connect_gmail",
+    description: "Subscribe to watch new emails"
 };
 
 export default connectGmail;
