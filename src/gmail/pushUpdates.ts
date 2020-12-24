@@ -26,19 +26,19 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
     const obj = JSON.parse(message);
     const user = await FindUserByEmail(obj.emailAddress);
-    res.send(500);
     if (user) {
-        // let response: false | IMailObject[];
-        // try {
-        //     response = await getEmails(obj.emailAddress, obj.historyId);
-        //     if (response === false) {
-        //         throw new Error();
-        //     }
-        // } catch (e) {
-        //     error(e);
-        //     res.status(204).send();
-        //     return;
-        // }
+        let response: false | IMailObject[];
+        try {
+            response = await getEmails(obj.emailAddress, obj.historyId);
+            if (response === false) {
+                throw new Error();
+            }
+        } catch (e) {
+            error(e);
+            res.status(204).send();
+            return;
+        }
+        res.send(500);
         // for (const chatId of user.chatsId) {
         //     for (const x of response) {
         //         if (!x.message) {
@@ -60,7 +60,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         //     }
         // }
     }
-    res.status(204).send();
+    //res.status(204).send();
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
