@@ -1,5 +1,6 @@
-import Express from "express";
+import Express, { Request, Response, NextFunction } from "express";
 import { bot } from "@telegram/index";
+import { error } from "@service/logging"
 import { router as gmailRouter } from "@gmail/index";
 
 export const app = Express();
@@ -12,3 +13,9 @@ app.get(`/${process.env.GOOGLE_SITE_VERIFICATION}.html`, (_req, res) => {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(`google-site-verification: ${process.env.GOOGLE_SITE_VERIFICATION}.html`);
 });
+
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+    error(err);
+    console.error(err.stack);
+    res.status(500);
+  })
