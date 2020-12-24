@@ -11,6 +11,7 @@ const authClient = new OAuth2Client();
 export const router = Express.Router();
 
 router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
+    res.send(500);
     try {
         const bearer = req.header("Authorization");
         const [, token] = bearer.match(/Bearer (.*)/);
@@ -63,6 +64,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
+    res.send(500);
     const users = await FindAll();
     if (!Array.isArray(users)) {
         res.status(204).send();
