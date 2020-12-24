@@ -1,13 +1,13 @@
 import Express from "express";
 import bodyParser from "body-parser";
-//import { OAuth2Client } from "google-auth-library";
+import { OAuth2Client } from "google-auth-library";
 import { error, info } from "@service/logging";
-// import { getEmails, IMailObject, authorizeUser, watchMails } from "@gmail/index";
-// import { FindUserByEmail, FindAll } from "@controller/user";
+import { getEmails, IMailObject, authorizeUser, watchMails } from "@gmail/index";
+import { FindUserByEmail, FindAll } from "@controller/user";
 import { bot } from "@telegram/index";
 
 const jsonBodyParser = bodyParser.json();
-//const authClient = new OAuth2Client();
+const authClient = new OAuth2Client();
 export const router = Express.Router();
 
 router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
@@ -64,28 +64,27 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
-    res.send(500);
-    // const users = await FindAll();
-    // if (!Array.isArray(users)) {
-    //     res.status(204).send();
-    //     return;
-    // }
-    // for (const user of users) {
-    //     const obj = await authorizeUser(user.telegramID);
-    //     const tgId = user.telegramID.toString();
-    //     if (obj !== null) {
-    //         if (obj.authorized) {
-    //             if (!(await watchMails(user.telegramID, obj.oauth))) {
-    //                 error(new Error("couldn't watch mails"));
-    //                 bot.telegram.sendMessage(tgId, "Try to renew gmail subscription");
-    //             } else {
-    //                 info(`Successfully update subscription for ${tgId}`);
-    //             }
-    //         } else {
-    //             error(new Error("bad token, not authorized"));
-    //             bot.telegram.sendMessage(tgId, "Renew gmail subscription");
-    //         }
-    //     }
-    // }
-    // res.status(204).send();
+    const users = await FindAll();
+    if (!Array.isArray(users)) {
+        res.status(204).send();
+        return;
+    }
+    for (const user of users) {
+        const obj = await authorizeUser(user.telegramID);
+        const tgId = user.telegramID.toString();
+        if (obj !== null) {
+            if (obj.authorized) {
+                if (!(await watchMails(user.telegramID, obj.oauth))) {
+                    error(new Error("couldn't watch mails"));
+                    bot.telegram.sendMessage(tgId, "Try to renew gmail subscription");
+                } else {
+                    info(`Successfully update subscription for ${tgId}`);
+                }
+            } else {
+                error(new Error("bad token, not authorized"));
+                bot.telegram.sendMessage(tgId, "Renew gmail subscription");
+            }
+        }
+    }
+    res.status(204).send();
 });
