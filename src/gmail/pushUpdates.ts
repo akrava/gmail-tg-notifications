@@ -23,44 +23,44 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         res.status(400).send("Invalid token");
         return;
     }
+    const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
+    const obj = JSON.parse(message);
+    const user = await FindUserByEmail(obj.emailAddress);
     res.send(500);
-    // const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
-    // const obj = JSON.parse(message);
-    // const user = await FindUserByEmail(obj.emailAddress);
-    // if (user) {
-    //     let response: false | IMailObject[];
-    //     try {
-    //         response = await getEmails(obj.emailAddress, obj.historyId);
-    //         if (response === false) {
-    //             throw new Error();
-    //         }
-    //     } catch (e) {
-    //         error(e);
-    //         res.status(204).send();
-    //         return;
-    //     }
-    //     for (const chatId of user.chatsId) {
-    //         for (const x of response) {
-    //             if (!x.message) {
-    //                 error(new Error("empty message"));
-    //             } else {
-    //                 const sent = await bot.telegram.sendMessage(
-    //                     chatId,
-    //                     x.message,
-    //                     { disable_web_page_preview: true }
-    //                 );
-    //                 x.attachments.forEach((y) => {
-    //                     bot.telegram.sendDocument(
-    //                         chatId,
-    //                         { filename: y.name, source: y.data },
-    //                         { reply_to_message_id: sent.message_id }
-    //                     );
-    //                 });
-    //             }
-    //         }
-    //     }
-    // }
-    // res.status(204).send();
+    if (user) {
+        // let response: false | IMailObject[];
+        // try {
+        //     response = await getEmails(obj.emailAddress, obj.historyId);
+        //     if (response === false) {
+        //         throw new Error();
+        //     }
+        // } catch (e) {
+        //     error(e);
+        //     res.status(204).send();
+        //     return;
+        // }
+        // for (const chatId of user.chatsId) {
+        //     for (const x of response) {
+        //         if (!x.message) {
+        //             error(new Error("empty message"));
+        //         } else {
+        //             const sent = await bot.telegram.sendMessage(
+        //                 chatId,
+        //                 x.message,
+        //                 { disable_web_page_preview: true }
+        //             );
+        //             x.attachments.forEach((y) => {
+        //                 bot.telegram.sendDocument(
+        //                     chatId,
+        //                     { filename: y.name, source: y.data },
+        //                     { reply_to_message_id: sent.message_id }
+        //                 );
+        //             });
+        //         }
+        //     }
+        // }
+    }
+    res.status(204).send();
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
