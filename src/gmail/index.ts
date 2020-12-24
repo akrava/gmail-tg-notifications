@@ -24,12 +24,12 @@ export interface IAttachmentObject { name: string; data: Buffer; }
 export async function authorizeUser(tgID: number): Promise<IAuthObject | null> {
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
     const { client_secret, client_id, redirect_uris } = credentials.installed;
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
     const user = await FindUserById(tgID);
     if (!user) {
         return null;
     }
     try {
-        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
         if (user.token === " ") {
             return { oauth: oAuth2Client, authorized: false };
         } else {

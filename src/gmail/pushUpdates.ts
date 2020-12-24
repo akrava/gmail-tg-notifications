@@ -17,7 +17,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         await authClient.verifyIdToken({
             idToken: token,
             audience: process.env.SERVER_PATH.replace(/https?:\/\/|\//g, ""),
-        }).catch(err => error(err));
+        });
     } catch (e) {
         error(e);
         res.status(400).send("Invalid token");
