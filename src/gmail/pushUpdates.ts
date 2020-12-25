@@ -6,6 +6,7 @@ import { error, info } from "@service/logging";
 import { getEmails, IMailObject, authorizeUser, watchMails } from "@gmail/index";
 import { FindUserByEmail, FindAll } from "@controller/user";
 import { bot } from "@telegram/index";
+import { getValue, setValue, isValueSet } from "@server/serverMap";
 
 const jsonBodyParser = bodyParser.json();
 const authClient = new OAuth2Client();
@@ -28,6 +29,10 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     const obj = JSON.parse(message);
     const emailAddress = mongoSanitize.sanitize(obj.emailAddress);
     const historyId = mongoSanitize.sanitize(obj.historyId);
+    if (!addGmailUserWithHistoryId(emailAddress, historyId)) {
+        res.status(204).send();
+        return;
+    }
     const user = await FindUserByEmail(emailAddress);
     if (user) {
         let response: false | IMailObject[];
@@ -63,6 +68,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         }
     }
     res.status(204).send();
+    removeGmailUserWithHistoryId(emailAddress, historyId);
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
@@ -90,3 +96,27 @@ router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
     }
     res.status(204).send();
 });
+
+
+const emailHistoryIdMapKey = "emailHistoryIdMap";
+
+function addGmailUserWithHistoryId(email: string, histryId: number) {
+    if (!isValueSet(emailHistoryIdMapKey)) {
+        setValue(emailHistoryIdMapKey, new Set<string>());
+    }
+    const current = email + histryId.toString();
+    const mapGmailUserWithHistoryId = getValue<Set<string>>(emailHistoryIdMapKey);
+    if (mapGmailUserWithHistoryId.has(current)) {
+        return false;
+    } else {
+        mapGmailUserWithHistoryId.add(current);
+        return true;
+    }
+}
+
+function removeGmailUserWithHistoryId(email: string, histryId: number) {
+    if (isValueSet(emailHistoryIdMapKey)) {
+        const current = email + histryId.toString();
+        getValue<Set<string>>(emailHistoryIdMapKey).delete(current);
+    }
+}
