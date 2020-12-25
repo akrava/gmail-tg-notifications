@@ -171,10 +171,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     const result = [];
     for (const mail of messagesDocuments) {
         console.log("TEST");
-        console.log(mail.payload.headers.toString());
-        if (mail.payload.headers.filter(x => x.name === "X-Original-Sender")[0].value === emailAdress) {
-            continue;
-        }
+        mail.payload.headers.forEach(x => console.log(x.name, x.value));
         let message = "";
         if (mail.payload.parts) {
             let data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
@@ -200,7 +197,11 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
                 message = `Date: ${toFormatedString(dateVal)}\n` + message;
             }
             if (from[0]) {
-                message = `From: ${from[0].value}\n` + message;
+                const fromValue = from[0].value;
+                if (fromValue.includes(emailAdress)) {
+                    continue;
+                }
+                message = `From: ${fromValue}\n` + message;
             }
         }
         const attachments: IAttachmentObject[] = [];
