@@ -197,7 +197,6 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             if (from[0]) {
                 const fromValue = from[0].value;
                 if (fromValue.includes(emailAdress)) {
-                    console.log("yesss!!");
                     continue;
                 }
                 message = `From: ${fromValue}\n` + message;
