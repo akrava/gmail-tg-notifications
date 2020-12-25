@@ -155,10 +155,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
     let res;
     try {
-        res = await asyncListHistory(gmail, user.historyId).catch(err => console.error(err));
-        if (typeof res !== "object") {
-            throw new Error();
-        }
+        res = await asyncListHistory(gmail, user.historyId);
     } catch (e) {
         error(e);
         return false;
@@ -307,7 +304,7 @@ function listHistory(
             } else {
                 callback(result, null);
             }
-        });
+        }).catch(err => callback(null, err));
     };
     const req = gmail.users.history.list({
         "userId": "me",
