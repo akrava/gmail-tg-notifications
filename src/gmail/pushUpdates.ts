@@ -103,6 +103,7 @@ const emailHistoryIdMapKey = "emailHistoryIdMap";
 
 function addGmailUserWithHistoryId(app: Application, email: string, histryId: number) {
     if (!isValueSet(app, emailHistoryIdMapKey)) {
+        console.log("!@!@!@!@!@!@!@");
         setValue(app, emailHistoryIdMapKey, new Set<string>());
         for (let i = 0; i < 100; i++) {
             if (isValueSet(app, emailHistoryIdMapKey)) {
@@ -111,6 +112,9 @@ function addGmailUserWithHistoryId(app: Application, email: string, histryId: nu
             console.log(getValue<Set<string>>(app, emailHistoryIdMapKey));
         }
     }
+    console.log("Double check: ");
+    console.log(getValue<Set<string>>(app, emailHistoryIdMapKey));
+    console.log(isValueSet(app, emailHistoryIdMapKey));
     const current = email + histryId.toString();
     const mapGmailUserWithHistoryId = getValue<Set<string>>(app, emailHistoryIdMapKey);
     if (mapGmailUserWithHistoryId.has(current)) {
