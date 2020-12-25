@@ -152,8 +152,8 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     } catch (err) {
         console.log(err);
     }
-    // const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
-    // let res;
+    const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
+    let res;
     // try {
     //     res = await asyncListHistory(gmail, user.historyId);
     // } catch (e) {
