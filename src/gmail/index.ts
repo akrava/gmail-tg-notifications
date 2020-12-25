@@ -147,11 +147,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
         error(new Error("Bad token"));
         return false;
     }
-    try {
-        oAuth2Client.setCredentials(JSON.parse(user.token));
-    } catch (err) {
-        console.log(err);
-    }
+    oAuth2Client.setCredentials(JSON.parse(user.token));
     const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
     let res;
     try {
@@ -168,65 +164,65 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             });
         }
     }
-    // const messagesDocuments = await retriveEmailsFromIds(gmail, emailsId);
-    // if (!messagesDocuments) {
-    //     return false;
-    // }
-    // const result = [];
-    // for (const mail of messagesDocuments) {
-    //     let message = "";
-    //     if (mail.payload.parts) {
-    //         let data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
-    //         if (data.length === 0) {
-    //             for (const part of mail.payload.parts) {
-    //                 if (part.parts) {
-    //                     data = data.concat(part.parts.filter((x) => x.mimeType === "text/html"));
-    //                 }
-    //             }
-    //         }
-    //         message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
-    //         message = htmlToText.fromString(message);
-    //     }
-    //     if (mail.payload.headers) {
-    //         const date = mail.payload.headers.filter((x) => x.name === "Date");
-    //         const from = mail.payload.headers.filter((x) => x.name === "From");
-    //         const subject = mail.payload.headers.filter((x) => x.name === "Subject");
-    //         if (subject[0]) {
-    //             message = `Subject: ${subject[0].value}\n\n\n\n` + message;
-    //         }
-    //         if (date[0]) {
-    //             const dateVal = new Date(date[0].value);
-    //             message = `Date: ${toFormatedString(dateVal)}\n` + message;
-    //         }
-    //         if (from[0]) {
-    //             message = `From: ${from[0].value}\n` + message;
-    //         }
-    //     }
-    //     const attachments: IAttachmentObject[] = [];
-    //     if (mail.payload && mail.payload.parts) {
-    //         for (const part of mail.payload.parts) {
-    //             if (part.filename) {
-    //                 if (part.body.data) {
-    //                     const data = Buffer.from(part.body.data, "base64");
-    //                     attachments.push({ name: part.filename, data });
-    //                 } else {
-    //                     const attId = part.body.attachmentId;
-    //                     const attachment = await retriveAttachment(gmail, mail.id, attId);
-    //                     if (!attachment) {
-    //                         return false;
-    //                     }
-    //                     const data = Buffer.from(attachment.data, "base64");
-    //                     attachments.push({ name: part.filename, data });
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     result.push({ message, attachments });
-    // }
-    // if (!(await SetHistoryId(user.telegramID, historyId))) {
-    //     return false;
-    // }
-    return [];
+    const messagesDocuments = await retriveEmailsFromIds(gmail, emailsId);
+    if (!messagesDocuments) {
+        return false;
+    }
+    const result = [];
+    for (const mail of messagesDocuments) {
+        let message = "";
+        if (mail.payload.parts) {
+            let data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
+            if (data.length === 0) {
+                for (const part of mail.payload.parts) {
+                    if (part.parts) {
+                        data = data.concat(part.parts.filter((x) => x.mimeType === "text/html"));
+                    }
+                }
+            }
+            message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
+            message = htmlToText.fromString(message);
+        }
+        if (mail.payload.headers) {
+            const date = mail.payload.headers.filter((x) => x.name === "Date");
+            const from = mail.payload.headers.filter((x) => x.name === "From");
+            const subject = mail.payload.headers.filter((x) => x.name === "Subject");
+            if (subject[0]) {
+                message = `Subject: ${subject[0].value}\n\n\n\n` + message;
+            }
+            if (date[0]) {
+                const dateVal = new Date(date[0].value);
+                message = `Date: ${toFormatedString(dateVal)}\n` + message;
+            }
+            if (from[0]) {
+                message = `From: ${from[0].value}\n` + message;
+            }
+        }
+        const attachments: IAttachmentObject[] = [];
+        if (mail.payload && mail.payload.parts) {
+            for (const part of mail.payload.parts) {
+                if (part.filename) {
+                    if (part.body.data) {
+                        const data = Buffer.from(part.body.data, "base64");
+                        attachments.push({ name: part.filename, data });
+                    } else {
+                        const attId = part.body.attachmentId;
+                        const attachment = await retriveAttachment(gmail, mail.id, attId);
+                        if (!attachment) {
+                            return false;
+                        }
+                        const data = Buffer.from(attachment.data, "base64");
+                        attachments.push({ name: part.filename, data });
+                    }
+                }
+            }
+        }
+        result.push({ message, attachments });
+    }
+    if (!(await SetHistoryId(user.telegramID, historyId))) {
+        return false;
+    }
+    return result;
 }
 
 function base64ToString(x: string) {

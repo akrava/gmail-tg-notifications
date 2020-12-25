@@ -6,33 +6,29 @@ import { BotCommand } from "telegraf/typings/telegram-types";
 
 
 const deleteToken: Middleware<Context> = async function(ctx) {
-    try {
-        const user = await checkUser(ctx);
-        if (user === false) {
-            return;
-        }
-        const obj = await authorizeUser(user.telegramID);
-        if (obj !== null) {
-            if (obj.authorized) {
-                if (!(await stopNotifications(obj.oauth))) {
-                    await ctx.reply("error while stopping notifications");
-                } else {
-                    await ctx.reply("Unsubscribed");
-                }
+    const user = await checkUser(ctx);
+    if (user === false) {
+        return;
+    }
+    const obj = await authorizeUser(user.telegramID);
+    if (obj !== null) {
+        if (obj.authorized) {
+            if (!(await stopNotifications(obj.oauth))) {
+                await ctx.reply("error while stopping notifications");
             } else {
-                await ctx.reply("Not authorized");
+                await ctx.reply("Unsubscribed");
             }
         } else {
-            await ctx.reply("Error ocurred: auth obj is null");
+            await ctx.reply("Not authorized");
         }
+    } else {
+        await ctx.reply("Error ocurred: auth obj is null");
+    }
 
-        if ((await DeleteCredentials(user.telegramID))) {
-            ctx.reply("successfully deleted token");
-        } else {
-            ctx.reply("error ocurred");
-        }
-    } catch (err) {
-        console.error(err);
+    if ((await DeleteCredentials(user.telegramID))) {
+        ctx.reply("successfully deleted token");
+    } else {
+        ctx.reply("error ocurred");
     }
 };
 

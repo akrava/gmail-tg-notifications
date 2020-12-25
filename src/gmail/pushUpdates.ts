@@ -38,29 +38,28 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
             res.status(204).send();
             return;
         }
-        res.send(500);
-        // for (const chatId of user.chatsId) {
-        //     for (const x of response) {
-        //         if (!x.message) {
-        //             error(new Error("empty message"));
-        //         } else {
-        //             const sent = await bot.telegram.sendMessage(
-        //                 chatId,
-        //                 x.message,
-        //                 { disable_web_page_preview: true }
-        //             );
-        //             x.attachments.forEach((y) => {
-        //                 bot.telegram.sendDocument(
-        //                     chatId,
-        //                     { filename: y.name, source: y.data },
-        //                     { reply_to_message_id: sent.message_id }
-        //                 );
-        //             });
-        //         }
-        //     }
-        // }
+        for (const chatId of user.chatsId) {
+            for (const x of response) {
+                if (!x.message) {
+                    error(new Error("empty message"));
+                } else {
+                    const sent = await bot.telegram.sendMessage(
+                        chatId,
+                        x.message,
+                        { disable_web_page_preview: true }
+                    );
+                    x.attachments.forEach((y) => {
+                        bot.telegram.sendDocument(
+                            chatId,
+                            { filename: y.name, source: y.data },
+                            { reply_to_message_id: sent.message_id }
+                        );
+                    });
+                }
+            }
+        }
     }
-    //res.status(204).send();
+    res.status(204).send();
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
