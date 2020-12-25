@@ -9,5 +9,5 @@ export function getValue<TVal>(app: Application, key: string): TVal {
 }
 
 export function isValueSet(app: Application, key: string) {
-    return typeof app.get(key) === "undefined";
+    return typeof app.get(key) !== "undefined";
 }
