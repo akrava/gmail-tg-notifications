@@ -5,14 +5,15 @@ const help: Middleware<Context> = async function(ctx) {
     ctx.reply(
         "Tap /start to get started.\n" +
         "Tap /connect_gmail to subcribe for new emails.\n" +
-        "Enter chats ID to send emails in such format:\n" +
+        "To forward emails from gmail into specific chats " +
+        "or channels you should enter chats ID in such format:\n" +
         "***\n" +
         "/set_chats\n" +
         "xxxx xxxx xxxx xxxx\n" +
         "***\n" +
         "Tap /delete_token to unsubscribe from gmail updates and delete creds.\n" +
         "Tap /delete_profile to unsubscribe, delete creds and profile from DB.\n" +
-        "Chats id you can get here: @userinfobot.\n" +
+        "Chats or channels id you can get here: @userinfobot.\n" +
         "Tap /get_id to get id of group chat."
     );
 };
