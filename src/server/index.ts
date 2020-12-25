@@ -15,7 +15,7 @@ app.get(`/${process.env.GOOGLE_SITE_VERIFICATION}.html`, (_req, res) => {
 });
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-    error(err);
-    console.error(err.stack);
+    console.error(err);
+    console.trace();
     res.status(500);
-  })
+});
