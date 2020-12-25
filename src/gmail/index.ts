@@ -154,20 +154,20 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
     let res;
-    // try {
-    //     res = await asyncListHistory(gmail, user.historyId);
-    // } catch (e) {
-    //     error(e);
-    //     return false;
-    // }
-    // const emailsId: string[] = [];
-    // for (const r of res) {
-    //     if (r.messagesAdded) {
-    //         r.messagesAdded.forEach((mail) => {
-    //             emailsId.push(mail.message.id);
-    //         });
-    //     }
-    // }
+    try {
+        res = await asyncListHistory(gmail, user.historyId);
+    } catch (e) {
+        error(e);
+        return false;
+    }
+    const emailsId: string[] = [];
+    for (const r of res) {
+        if (r.messagesAdded) {
+            r.messagesAdded.forEach((mail) => {
+                emailsId.push(mail.message.id);
+            });
+        }
+    }
     // const messagesDocuments = await retriveEmailsFromIds(gmail, emailsId);
     // if (!messagesDocuments) {
     //     return false;
