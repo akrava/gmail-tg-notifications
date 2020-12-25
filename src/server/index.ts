@@ -17,7 +17,6 @@ app.use(limiter);
 
 app.use(mongoSanitize());
 
-console.log(bot);
 app.use(bot.webhookCallback(process.env.WEBHOOK_TG_PATH));
 
 app.use(gmailRouter);

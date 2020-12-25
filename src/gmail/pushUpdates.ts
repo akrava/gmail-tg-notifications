@@ -1,4 +1,4 @@
-import Express from "express";
+import Express, { Application } from "express";
 import bodyParser from "body-parser";
 import mongoSanitize from "express-mongo-sanitize";
 import { OAuth2Client } from "google-auth-library";
@@ -29,7 +29,8 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     const obj = JSON.parse(message);
     const emailAddress = mongoSanitize.sanitize(obj.emailAddress);
     const historyId = mongoSanitize.sanitize(obj.historyId);
-    if (!addGmailUserWithHistoryId(emailAddress, historyId)) {
+    const app = req.app;
+    if (!addGmailUserWithHistoryId(app, emailAddress, historyId)) {
         res.status(204).send();
         return;
     }
@@ -68,7 +69,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         }
     }
     res.status(204).send();
-    removeGmailUserWithHistoryId(emailAddress, historyId);
+    removeGmailUserWithHistoryId(app, emailAddress, historyId);
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
@@ -100,12 +101,12 @@ router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
 
 const emailHistoryIdMapKey = "emailHistoryIdMap";
 
-function addGmailUserWithHistoryId(email: string, histryId: number) {
-    if (!isValueSet(emailHistoryIdMapKey)) {
-        setValue(emailHistoryIdMapKey, new Set<string>());
+function addGmailUserWithHistoryId(app: Application, email: string, histryId: number) {
+    if (!isValueSet(app, emailHistoryIdMapKey)) {
+        setValue(app, emailHistoryIdMapKey, new Set<string>());
     }
     const current = email + histryId.toString();
-    const mapGmailUserWithHistoryId = getValue<Set<string>>(emailHistoryIdMapKey);
+    const mapGmailUserWithHistoryId = getValue<Set<string>>(app, emailHistoryIdMapKey);
     if (mapGmailUserWithHistoryId.has(current)) {
         return false;
     } else {
@@ -114,9 +115,9 @@ function addGmailUserWithHistoryId(email: string, histryId: number) {
     }
 }
 
-function removeGmailUserWithHistoryId(email: string, histryId: number) {
-    if (isValueSet(emailHistoryIdMapKey)) {
+function removeGmailUserWithHistoryId(app: Application, email: string, histryId: number) {
+    if (isValueSet(app, emailHistoryIdMapKey)) {
         const current = email + histryId.toString();
-        getValue<Set<string>>(emailHistoryIdMapKey).delete(current);
+        getValue<Set<string>>(app, emailHistoryIdMapKey).delete(current);
     }
 }
