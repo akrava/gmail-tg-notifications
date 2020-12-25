@@ -170,8 +170,6 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const result = [];
     for (const mail of messagesDocuments) {
-        console.log("TEST");
-        mail.payload.headers.forEach(x => console.log(x.name, x.value));
         let message = "";
         if (mail.payload.parts) {
             let data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
@@ -199,6 +197,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             if (from[0]) {
                 const fromValue = from[0].value;
                 if (fromValue.includes(emailAdress)) {
+                    console.log("yesss!!");
                     continue;
                 }
                 message = `From: ${fromValue}\n` + message;
