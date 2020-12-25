@@ -7,6 +7,7 @@ import setChatsId, { desrciption as setChatsIdCommand } from "@commands/setChats
 import getId, { desrciption as getIdCommand } from "@commands/getId";
 import help, { desrciption as helpCommand } from "@commands/help";
 import deleteTokenCb, { desrciption as deleteTokenCommand } from "@commands/deleteToken";
+import deleteProfileCb, { desrciption as deleteProfileCommand } from "@commands/deleteProfile";
 import { stage as authGmailStage } from "@commands/connectGmail";
 
 export const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -18,9 +19,10 @@ bot.command(connectGmailCommand.command, connectGmailCb);
 bot.command(setChatsIdCommand.command, setChatsId);
 bot.command(getIdCommand.command, getId);
 bot.command(deleteTokenCommand.command, deleteTokenCb);
+bot.command(deleteProfileCommand.command, deleteTokenCb, deleteProfileCb);
 bot.help(help);
 
-bot.telegram.setMyCommands([connectGmailCommand, getIdCommand,
-    setChatsIdCommand, deleteTokenCommand, helpCommand])
+bot.telegram.setMyCommands([connectGmailCommand, getIdCommand, setChatsIdCommand,
+    deleteTokenCommand, helpCommand, deleteProfileCommand]);
 
 bot.catch((err: Error) => error(err));
