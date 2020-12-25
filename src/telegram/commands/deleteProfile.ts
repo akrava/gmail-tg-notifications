@@ -20,7 +20,7 @@ const deleteProfile: MiddlewareFn<Context> = async function(ctx) {
 
 export const desrciption: BotCommand = {
     command: "delete_profile",
-    description: "Delete your profile with creds from bot"
+    description: "Delete your profile with creds"
 };
 
 export default deleteProfile;

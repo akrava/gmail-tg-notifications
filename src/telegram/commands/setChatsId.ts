@@ -57,7 +57,7 @@ const setChatsId: Middleware<Context> = async function(ctx) {
 
 export const desrciption: BotCommand = {
     command: "set_chats",
-    description: "Specify list of IDs where to send emails"
+    description: "Set chats IDs where to forward emails"
 };
 
 export default setChatsId;

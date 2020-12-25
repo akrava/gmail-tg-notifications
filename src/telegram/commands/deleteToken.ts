@@ -35,7 +35,7 @@ const deleteToken: MiddlewareFn<Context> = async function(ctx) {
 
 export const desrciption: BotCommand = {
     command: "delete_token",
-    description: "Stop watching your email and delete Gmail token"
+    description: "Unsubscribe from email updates and delete Gmail token"
 };
 
 export default deleteToken;
