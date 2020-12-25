@@ -10,9 +10,10 @@ const help: Middleware<Context> = async function(ctx) {
         "/set_chats\n" +
         "xxxx xxxx xxxx xxxx\n" +
         "***\n" +
-        "Tap /delete_token to delete token\n" +
-        "Chats id you can get here: @userinfobot\n" +
-        "/get_id to get id of group chat"
+        "Tap /delete_token to unsubscribe from gmail updates and delete creds.\n" +
+        "Tap /delete_profile to unsubscribe, delete creds and profile from DB.\n" +
+        "Chats id you can get here: @userinfobot.\n" +
+        "Tap /get_id to get id of group chat."
     );
 };
 
