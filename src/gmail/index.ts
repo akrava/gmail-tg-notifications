@@ -170,6 +170,11 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     }
     const result = [];
     for (const mail of messagesDocuments) {
+        console.log("TEST");
+        console.log(mail.payload.headers.toString());
+        if (mail.payload.headers.filter(x => x.name === "X-Original-Sender")[0].value === emailAdress) {
+            continue;
+        }
         let message = "";
         if (mail.payload.parts) {
             let data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
