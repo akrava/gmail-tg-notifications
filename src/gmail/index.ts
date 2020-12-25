@@ -300,7 +300,10 @@ function listHistory(
             } else {
                 callback(result, null);
             }
-        }).catch(err => {console.log("!!!!!!!!!!!!!!!"); console.error(err); callback(null, new Error(err));}).finally(() => console.log("AAAAA"));
+        }).catch(err => {
+            console.error(`Error in listen history callback: ${err}`);
+            callback(null, new Error(err));
+        });
     };
     const req = gmail.users.history.list({
         "userId": "me",
