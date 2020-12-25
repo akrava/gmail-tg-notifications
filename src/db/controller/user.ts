@@ -7,7 +7,7 @@ export interface ICreateUserInput {
     token?: IUser["token"];
     email: IUser["email"];
     historyId?: IUser["historyId"];
-    senderEmailToFilter?: IUser["senderEmailToFilter"]
+    senderEmailToFilter?: IUser["senderEmailToFilter"];
 }
 
 export async function CreateUser(obj: ICreateUserInput) {
