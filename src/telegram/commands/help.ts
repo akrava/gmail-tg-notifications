@@ -18,7 +18,7 @@ const help: Middleware<Context> = async function(ctx) {
 
 export const desrciption: BotCommand = {
     command: "help",
-    description: "How use this bot"
+    description: "How to use this bot"
 };
 
 export default help;

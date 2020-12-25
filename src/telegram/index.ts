@@ -1,7 +1,7 @@
 import Telegraf from "telegraf";
 import { error } from "@service/logging";
 import session from "telegraf/session";
-import startCb from "@commands/start";
+import startCb, { desrciption as startCommand } from "@commands/start";
 import connectGmailCb, { desrciption as connectGmailCommand } from "@commands/connectGmail";
 import setChatsId, { desrciption as setChatsIdCommand } from "@commands/setChatsId";
 import getId, { desrciption as getIdCommand } from "@commands/getId";
@@ -22,7 +22,7 @@ bot.command(deleteTokenCommand.command, deleteTokenCb);
 bot.command(deleteProfileCommand.command, deleteTokenCb, deleteProfileCb);
 bot.help(help);
 
-bot.telegram.setMyCommands([connectGmailCommand, getIdCommand, setChatsIdCommand,
-    deleteTokenCommand, helpCommand, deleteProfileCommand]);
+bot.telegram.setMyCommands([startCommand, connectGmailCommand, setChatsIdCommand, helpCommand,
+    getIdCommand, deleteTokenCommand, deleteProfileCommand]);
 
 bot.catch((err: Error) => error(err));
