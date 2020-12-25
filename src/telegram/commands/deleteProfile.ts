@@ -5,6 +5,7 @@ import { BotCommand } from "telegraf/typings/telegram-types";
 
 
 const deleteProfile: Middleware<Context> = async function(ctx) {
+    console.log("test");
     const user = await checkUser(ctx);
     if (user === false) {
         return;
