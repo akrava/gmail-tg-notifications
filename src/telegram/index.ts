@@ -19,7 +19,10 @@ bot.command(connectGmailCommand.command, connectGmailCb);
 bot.command(setChatsIdCommand.command, setChatsId);
 bot.command(getIdCommand.command, getId);
 bot.command(deleteTokenCommand.command, deleteTokenCb);
-bot.command(deleteProfileCommand.command, deleteTokenCb, deleteProfileCb);
+bot.command(deleteProfileCommand.command, async (ctx) =>  {
+    await deleteTokenCb(ctx, null);
+    await deleteProfileCb(ctx, null);
+});
 bot.help(help);
 
 bot.telegram.setMyCommands([startCommand, connectGmailCommand, setChatsIdCommand, helpCommand,

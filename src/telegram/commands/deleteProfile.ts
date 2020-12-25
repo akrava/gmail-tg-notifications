@@ -1,20 +1,20 @@
-import { Context, Middleware } from "telegraf";
+import { Context } from "telegraf";
+import { MiddlewareFn } from "telegraf/typings/composer"
 import { DeleteUser } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { BotCommand } from "telegraf/typings/telegram-types";
 
 
-const deleteProfile: Middleware<Context> = async function(ctx) {
-    console.log("test");
+const deleteProfile: MiddlewareFn<Context> = async function(ctx) {
     const user = await checkUser(ctx);
     if (user === false) {
         return;
     }
 
     if ((await DeleteUser(user.telegramID))) {
-        ctx.reply("successfully deleted user from db");
+        await ctx.reply("successfully deleted user from db");
     } else {
-        ctx.reply("error ocurred");
+        await ctx.reply("error ocurred");
     }
 };
 
