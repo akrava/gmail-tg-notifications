@@ -1,5 +1,6 @@
 import Express from "express";
 import bodyParser from "body-parser";
+import mongoSanitize from "express-mongo-sanitize";
 import { OAuth2Client } from "google-auth-library";
 import { error, info } from "@service/logging";
 import { getEmails, IMailObject, authorizeUser, watchMails } from "@gmail/index";
@@ -25,11 +26,13 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     }
     const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
     const obj = JSON.parse(message);
-    const user = await FindUserByEmail(obj.emailAddress);
+    const emailAddress = mongoSanitize.sanitize(obj.emailAddress);
+    const historyId = mongoSanitize.sanitize(obj.historyId);
+    const user = await FindUserByEmail(emailAddress);
     if (user) {
         let response: false | IMailObject[];
         try {
-            response = await getEmails(obj.emailAddress, obj.historyId);
+            response = await getEmails(emailAddress, historyId);
             if (response === false) {
                 throw new Error();
             }
