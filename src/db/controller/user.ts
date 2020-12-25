@@ -7,6 +7,7 @@ export interface ICreateUserInput {
     token?: IUser["token"];
     email: IUser["email"];
     historyId?: IUser["historyId"];
+    senderEmailToFilter?: IUser["senderEmailToFilter"]
 }
 
 export async function CreateUser(obj: ICreateUserInput) {
@@ -15,7 +16,8 @@ export async function CreateUser(obj: ICreateUserInput) {
             chatsId: obj.chatsId,
             token: obj.token,
             email: obj.email,
-            historyId: obj.historyId
+            historyId: obj.historyId,
+            senderEmailToFilter: obj.senderEmailToFilter
         })
         .then((data: IUser) => {
             return data;
@@ -66,6 +68,11 @@ export async function SetHistoryId(tgId: IUser["telegramID"], hId: IUser["histor
 
 export async function SetEmail(tgId: IUser["telegramID"], email: IUser["email"]) {
     return User.findOneAndUpdate({ telegramID: tgId }, { $set: { email } }, { upsert: true })
+        .then(() => true).catch((e) => (error(e), false));
+}
+
+export async function SetSenderEmailToFilter(tgId: IUser["telegramID"], senderEmailToFilter: IUser["senderEmailToFilter"]) {
+    return User.findOneAndUpdate({ telegramID: tgId }, { $set: { senderEmailToFilter } }, { upsert: true })
         .then(() => true).catch((e) => (error(e), false));
 }
 

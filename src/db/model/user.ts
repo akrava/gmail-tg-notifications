@@ -7,14 +7,16 @@ export interface IUser extends Document {
     token: string;
     email: string;
     historyId: number;
+    senderEmailToFilter?: string;
 }
 
 const UserSchema: Schema = new Schema({
-    telegramID: { type: Number,   required: true, unique: true },
-    chatsId:    { type: [Number], required: true, default: []  },
-    token:      { type: String,   required: true, default: " " },
-    email:      { type: String,   required: true, unique: true },
-    historyId:  { type: Number,   required: true, default: 0   }
+    telegramID:          { type: Number,   required: true,  unique: true  },
+    chatsId:             { type: [Number], required: true,  default: []   },
+    token:               { type: String,   required: true,  default: " "  },
+    email:               { type: String,   required: true,  unique: true  },
+    historyId:           { type: Number,   required: true,  default: 0    },
+    senderEmailToFilter: { type: String,   required: false, default: null }
 });
 
 export default mongoose.model<IUser>("User", UserSchema);
