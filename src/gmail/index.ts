@@ -304,7 +304,7 @@ function listHistory(
             } else {
                 callback(result, null);
             }
-        }).catch(err => callback(null, err));
+        }).catch(err => callback(null, new Error(err)));
     };
     const req = gmail.users.history.list({
         "userId": "me",
