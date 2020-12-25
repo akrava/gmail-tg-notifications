@@ -143,11 +143,15 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
     const { client_secret, client_id, redirect_uris } = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-    // if (user.token === " ") {
-    //     error(new Error("Bad token"));
-    //     return false;
-    // }
-    // oAuth2Client.setCredentials(JSON.parse(user.token));
+    if (user.token === " ") {
+        error(new Error("Bad token"));
+        return false;
+    }
+    try {
+        oAuth2Client.setCredentials(JSON.parse(user.token));
+    } catch (err) {
+        console.log(err);
+    }
     // const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
     // let res;
     // try {
