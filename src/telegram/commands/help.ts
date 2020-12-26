@@ -7,29 +7,30 @@ const help: Middleware<Context> = async function(ctx) {
         "Tap /connect_gmail to subcribe for new emails.\n" +
         "To forward emails from gmail into specific chats " +
         "or channels you should enter chats ID in such format:\n" +
-        "***\n" +
+        "```\n" +
         "/set_chats\n" +
         "xxxx xxxx xxxx xxxx\n" +
-        "***\n" +
+        "```\n" +
         "Use /filter_emails command to filter incoming mails from senders email " +
-        "addressess.\n To set filter rule to block only emails from specified " + 
+        "addressess.\nTo set filter rule to block only emails from specified " + 
         "senders you should type such message:\n" +
-        "***\n" +
+        "```\n" +
         "/filter_emails\n" +
         "block\n" +
-        "john@example.com tom@simple.org mymail@server.net\n" +
-        "***\n" +
+        "john@example.com tom@simple.org" +
+        "```\n" +
         "To set filter rule to allow only emails from specified " + 
         "senders you should type such message:\n" +
-        "***\n" +
+        "```\n" +
         "/filter_emails\n" +
         "allow\n" +
-        "john@example.com tom@simple.org mymail@server.net\n" +
-        "***\n" +
+        "john@example.com tom@simple.org\n" +
+        "```\n" +
         "Tap /delete_token to unsubscribe from gmail updates and delete creds.\n" +
         "Tap /delete_profile to unsubscribe, delete creds and profile from DB.\n" +
         "Chats or channels id you can get here: @userinfobot.\n" +
-        "Tap /get_id to get id of group chat."
+        "Tap /get_id to get id of group chat.",
+        { parse_mode: "Markdown" }
     );
 };
 
