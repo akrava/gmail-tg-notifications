@@ -30,6 +30,7 @@ const filterEmails: MiddlewareFn<Context> = async function(ctx) {
                 }
             }
             const emails = Array.from(thirdLine.match(/\S+/g)) || [];
+            emails.map(x => x.toLowerCase());
             if ((await SetSenderEmailsToFilterAndAction(user.telegramID, emails, isActionBlock))) {
                 await ctx.reply(
                     `Filter rule was successfully set to ` +

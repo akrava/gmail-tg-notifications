@@ -27,7 +27,8 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     }
     const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
     const obj = JSON.parse(message);
-    const emailAddress = mongoSanitize.sanitize(obj.emailAddress);
+    const emailAddress = (mongoSanitize.sanitize(obj.emailAddress) as string)
+        .toLowerCase().trim();
     const historyId = mongoSanitize.sanitize(obj.historyId);
     const app = req.app;
     if (!addGmailUserWithHistoryId(app, emailAddress, historyId)) {
