@@ -11,6 +11,21 @@ const help: Middleware<Context> = async function(ctx) {
         "/set_chats\n" +
         "xxxx xxxx xxxx xxxx\n" +
         "***\n" +
+        "Use /filter_emails command to filter incoming mails from senders email " +
+        "addressess.\n To set filter rule to block only emails from specified " + 
+        "senders you should type such message:\n" +
+        "***\n" +
+        "/filter_emails\n" +
+        "block\n" +
+        "john@example.com tom@simple.org mymail@server.net\n" +
+        "***\n" +
+        "To set filter rule to allow only emails from specified " + 
+        "senders you should type such message:\n" +
+        "***\n" +
+        "/filter_emails\n" +
+        "allow\n" +
+        "john@example.com tom@simple.org mymail@server.net\n" +
+        "***\n" +
         "Tap /delete_token to unsubscribe from gmail updates and delete creds.\n" +
         "Tap /delete_profile to unsubscribe, delete creds and profile from DB.\n" +
         "Chats or channels id you can get here: @userinfobot.\n" +
