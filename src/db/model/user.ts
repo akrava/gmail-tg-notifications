@@ -8,6 +8,7 @@ export interface IUser extends Document {
     email: string;
     historyId: number;
     senderEmailsToFilter?: string[];
+    filterActionIsBlock?: boolean;
 }
 
 const UserSchema: Schema = new Schema({
@@ -16,7 +17,8 @@ const UserSchema: Schema = new Schema({
     token:                { type: String,   required: true,  default: " "  },
     email:                { type: String,   required: true,  unique: true  },
     historyId:            { type: Number,   required: true,  default: 0    },
-    senderEmailsToFilter: { type: [String], required: false, default: null }
+    senderEmailsToFilter: { type: [String], required: false, default: null },
+    filterActionIsBlock:  { type: Boolean,  required: false, default: null },
 });
 
 export default mongoose.model<IUser>("User", UserSchema);

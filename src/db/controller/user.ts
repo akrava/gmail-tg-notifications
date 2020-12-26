@@ -8,6 +8,7 @@ export interface ICreateUserInput {
     email: IUser["email"];
     historyId?: IUser["historyId"];
     senderEmailsToFilter?: IUser["senderEmailsToFilter"];
+    filterActionIsBlock?:  IUser["filterActionIsBlock"];
 }
 
 export async function CreateUser(obj: ICreateUserInput) {
@@ -17,7 +18,8 @@ export async function CreateUser(obj: ICreateUserInput) {
             token: obj.token,
             email: obj.email,
             historyId: obj.historyId,
-            senderEmailsToFilter: obj.senderEmailsToFilter
+            senderEmailsToFilter: obj.senderEmailsToFilter,
+            filterActionIsBlock: obj.filterActionIsBlock
         })
         .then((data: IUser) => {
             return data;
@@ -71,8 +73,13 @@ export async function SetEmail(tgId: IUser["telegramID"], email: IUser["email"])
         .then(() => true).catch((e) => (error(e), false));
 }
 
-export async function SetsenderEmailsToFilter(tgId: IUser["telegramID"], senderEmailsToFilter: IUser["senderEmailsToFilter"]) {
-    return User.findOneAndUpdate({ telegramID: tgId }, { $set: { senderEmailsToFilter } }, { upsert: true })
+export async function SetSenderEmailsToFilterAndAction(
+    tgId: IUser["telegramID"], senderEmailsToFilter?: IUser["senderEmailsToFilter"],
+    filterActionIsBlock?: IUser["filterActionIsBlock"]
+) {
+    return User.findOneAndUpdate({ telegramID: tgId }, { 
+            $set: { senderEmailsToFilter, filterActionIsBlock } 
+        }, { upsert: true })
         .then(() => true).catch((e) => (error(e), false));
 }
 
