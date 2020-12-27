@@ -195,8 +195,8 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
                 message = `Date: ${toFormatedString(dateVal)}\n` + message;
             }
             if (from[0]) {
-                const fromValue = from[0].value;
-                if (fromValue.includes(emailAdress)) {
+                const fromValue = from[0].value.toLowerCase();
+                if (fromValue.includes(emailAdress) || shouldSkipEmailFromThisSender(fromValue, user)) {
                     continue;
                 }
                 message = `From: ${fromValue}\n` + message;
@@ -316,3 +316,14 @@ function listHistory(
     });
     getPageOfHistory(req, []);
 }
+
+function shouldSkipEmailFromThisSender(valueWithSenderEmailAddress: string, currentTgUser: IUser) {
+    if (typeof currentTgUser.filterActionIsBlock === "boolean" && Array.isArray(currentTgUser.senderEmailsToFilter)) {
+        if (currentTgUser.filterActionIsBlock) {
+            return currentTgUser.senderEmailsToFilter.some(x => valueWithSenderEmailAddress.includes(x));
+        } else {
+            return currentTgUser.senderEmailsToFilter.every(x => !valueWithSenderEmailAddress.includes(x));
+        }
+    }
+    return false;
+} 
