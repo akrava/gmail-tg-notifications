@@ -1,6 +1,5 @@
 import { Context } from "telegraf";
 import { MiddlewareFn } from "telegraf/typings/composer";
-import { ExtraReplyMessage } from "telegraf/typings/telegram-types";
 import { SetSenderEmailsToFilterAndAction } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { BotCommand } from "telegraf/typings/telegram-types";
