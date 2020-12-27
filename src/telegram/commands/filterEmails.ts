@@ -11,7 +11,6 @@ const filterEmails: MiddlewareFn<Context> = async function(ctx) {
         return;
     }
     const lines = ctx.message.text.split(/[\r\n]+/);
-    const mdOptions : ExtraReplyMessage = { parse_mode: "Markdown" };
     switch(lines.length) {
         case 3: {
             const secondLine = lines[1];
@@ -49,11 +48,10 @@ const filterEmails: MiddlewareFn<Context> = async function(ctx) {
                     await ctx.reply("Error ocurred");
                 }
             } else {
-                await ctx.reply(
-                    "Expected `no` to disable filter. You should send such messsage " +
-                    `to disable filtering: \n\`\`\`/${desrciption.command}\nno\`\`\`\`` +
-                    "\nNothing to do.",
-                    mdOptions
+                await ctx.replyWithHTML(
+                    "Expected <code>no</code> to disable filter. You should send such " +
+                    `messsage to disable filtering: \n<code>${desrciption.command}\nno` +
+                    "</code>\nNothing to do."
                 );
             }
         } break;
