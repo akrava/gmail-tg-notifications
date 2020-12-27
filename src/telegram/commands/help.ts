@@ -6,7 +6,7 @@ const help: Middleware<Context> = async function(ctx) {
         "Tap /start to get started.\n\n" +
         "Tap /connect_gmail to subcribe for new emails.\n\n" +
         "To forward emails from gmail into specific chats " +
-        "or channels you should enter /set_chats command and " +
+        "or channels you should enter command /set_chats and " +
         "list of chats ID separeted by whitespaces on second " +
         "line in such format :\n" +
         "<pre>" +
