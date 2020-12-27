@@ -32,6 +32,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     const historyId = mongoSanitize.sanitize(obj.historyId);
     const app = req.app;
     if (!addGmailUserWithHistoryId(app, emailAddress, historyId)) {
+        info("This update was skipped due to it has been already processed");
         res.status(204).send();
         return;
     }
@@ -70,7 +71,7 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
         }
     }
     res.status(204).send();
-    removeGmailUserWithHistoryId(app, emailAddress, historyId);
+    cleanGmailHistoryIdMap(app);
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
@@ -104,21 +105,25 @@ const emailHistoryIdMapKey = "emailHistoryIdMap";
 
 function addGmailUserWithHistoryId(app: Application, email: string, histryId: number) {
     if (!isValueSet(app, emailHistoryIdMapKey)) {
-        setValue(app, emailHistoryIdMapKey, new Set<string>());
+        setValue(app, emailHistoryIdMapKey, new Map<string, number>());
     }
     const current = email + histryId.toString();
-    const mapGmailUserWithHistoryId = getValue<Set<string>>(app, emailHistoryIdMapKey);
+    const curTime =  new Date().getTime();
+    const mapGmailUserWithHistoryId = getValue<Map<string, number>>(app, emailHistoryIdMapKey);
     if (mapGmailUserWithHistoryId.has(current)) {
         return false;
     } else {
-        mapGmailUserWithHistoryId.add(current);
+        mapGmailUserWithHistoryId.set(current, curTime);
         return true;
     }
 }
 
-function removeGmailUserWithHistoryId(app: Application, email: string, histryId: number) {
+function cleanGmailHistoryIdMap(app: Application) {
     if (isValueSet(app, emailHistoryIdMapKey)) {
-        const current = email + histryId.toString();
-        getValue<Set<string>>(app, emailHistoryIdMapKey).delete(current);
+        const map = getValue<Map<string, number>>(app, emailHistoryIdMapKey);
+        if (map.size > 25) {
+            const keysToDelete = Array.from(map.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            keysToDelete.forEach(x => map.delete(x[0]));
+        }
     }
 }
