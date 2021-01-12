@@ -261,12 +261,10 @@ async function retriveEmailsFromIds(gmail: gmail_v1.Gmail, arr: string[]) {
             continue;
         } else if (resp.status !== 200) {
             console.log(resp.status);
-            throw new Error(resp.statusText);
+            error(new Error(resp.statusText));
+            continue;
         }
         result.push(resp.data);
-    }
-    if (result.length === 0) {
-        return false;
     }
     return result;
 }
