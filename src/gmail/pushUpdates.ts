@@ -53,7 +53,13 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
             for (const x of response) {
                 if (!x.message) {
                     error(new Error("empty message"));
+                    continue;
                 } else {
+                    if (x.message.length > 3500) {
+                        // TODO send several messages
+                        x.message = x.message.substr(0, 3500);
+                        x.message = x.message + "\nMessage exceed max length";
+                    }
                     const sent = await bot.telegram.sendMessage(
                         chatId,
                         x.message,
