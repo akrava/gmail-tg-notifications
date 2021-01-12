@@ -255,11 +255,7 @@ async function retriveEmailsFromIds(gmail: gmail_v1.Gmail, arr: string[]) {
             resp = await gmail.users.messages.get({ userId: "me", id });
         } catch (e) {
             error(e);
-            if (e.message === "Not Found") {
-                continue;
-            } else {
-                return false;
-            }
+            continue;
         }
         if (resp.status === 404) {
             continue;
@@ -268,6 +264,9 @@ async function retriveEmailsFromIds(gmail: gmail_v1.Gmail, arr: string[]) {
             throw new Error(resp.statusText);
         }
         result.push(resp.data);
+    }
+    if (result.length === 0) {
+        return false;
     }
     return result;
 }
