@@ -28,6 +28,7 @@ bot.command(filterEmailsCommand.command, filterEmailsCb);
 bot.help(help);
 
 bot.telegram.setMyCommands([startCommand, connectGmailCommand, setChatsIdCommand, helpCommand,
-    filterEmailsCommand, getIdCommand, deleteTokenCommand, deleteProfileCommand]);
+    filterEmailsCommand, getIdCommand, deleteTokenCommand, deleteProfileCommand])
+    .catch(e => error(e));
 
 bot.catch((err: Error) => error(err));
