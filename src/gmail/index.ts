@@ -230,7 +230,8 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
 }
 
 function base64ToString(x: string) {
-    return Buffer.from(x, "base64").toString("utf-8");
+    const message = x || "";
+    return Buffer.from(message, "base64").toString("utf-8");
 }
 
 async function retriveAttachment(gmail: gmail_v1.Gmail, messageId: string, attId: string) {
