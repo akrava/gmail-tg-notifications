@@ -172,16 +172,31 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     for (const mail of messagesDocuments) {
         let message = "";
         if (mail.payload.parts) {
-            let data = mail.payload.parts.filter((x) => x.mimeType === "text/html");
+            let data = mail.payload.parts.filter((x) => x.mimeType.includes("text/html"));
             if (data.length === 0) {
                 for (const part of mail.payload.parts) {
                     if (part.parts) {
-                        data = data.concat(part.parts.filter((x) => x.mimeType === "text/html"));
+                        data = data.concat(part.parts.filter((x) => x.mimeType.includes("text/html")));
                     }
                 }
             }
             message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), "");
             message = htmlToText.fromString(message);
+
+            // TODO 
+            if (message.trim().length === 0) {
+                let data = mail.payload.parts.filter((x) => x.headers && x.headers.filter(x => x.name && x.name.includes("Content-Type") && x.value && x.value.includes("text/html")).length > 0);
+                if (data.length === 0) {
+                    for (const part of mail.payload.parts) {
+                        if (part.parts) {
+                            data = data.concat(part.parts.filter((x) => x.headers && x.headers.filter(x => x.name && x.name.includes("Content-Type") && x.value && x.value.includes("text/html")).length > 0));
+                        }
+                    }
+                }
+                message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), ""); //
+                message = htmlToText.fromString(message); //
+            }
+            // TODO 
         }
         if (mail.payload.headers) {
             const date = mail.payload.headers.filter((x) => x.name === "Date");
@@ -255,7 +270,7 @@ async function retriveEmailsFromIds(gmail: gmail_v1.Gmail, arr: string[]) {
     for (const id of arr) {
         let resp;
         try {
-            resp = await gmail.users.messages.get({ userId: "me", id });
+            resp = await gmail.users.messages.get({ userId: "me", id, format: "FULL" });
         } catch (e) {
             error(e);
             continue;
