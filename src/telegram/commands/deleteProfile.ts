@@ -1,5 +1,4 @@
-import { Context } from "telegraf";
-import { MiddlewareFn } from "telegraf/typings/composer"
+import { Context, MiddlewareFn } from "telegraf";
 import { DeleteUser } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { BotCommand } from "telegraf/typings/telegram-types";

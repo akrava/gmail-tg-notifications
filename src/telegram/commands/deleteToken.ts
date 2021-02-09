@@ -1,5 +1,4 @@
-import { Context } from "telegraf";
-import { MiddlewareFn } from "telegraf/typings/composer"
+import { Context, MiddlewareFn } from "telegraf";
 import { DeleteCredentials } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { authorizeUser, stopNotifications } from "@gmail/index";

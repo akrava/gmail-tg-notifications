@@ -1,13 +1,11 @@
 import { FindUserById, SetEmail } from "@controller/user";
 import { checkUser } from "@telegram/common";
-import { Middleware } from "telegraf";
+import { Middleware, Scenes, Context } from "telegraf";
 import { authorizeUser, generateUrlToGetToken, getNewToken, IAuthObject } from "@gmail/index";
-import Stage from "telegraf/stage";
-import Scene, { SceneContextMessageUpdate } from "telegraf/scenes/base";
 import { getEmailAdress, watchMails } from "@gmail/index";
 import { BotCommand } from "telegraf/typings/telegram-types";
 
-const gmailConnectScene = new Scene("connect_gmail");
+const gmailConnectScene = new Scenes.BaseScene<Scenes.SceneContext>("connect_gmail");
 gmailConnectScene.enter(async (ctx) => {
     const user = await FindUserById(ctx.chat.id);
     if (!user) {
@@ -40,7 +38,7 @@ gmailConnectScene.enter(async (ctx) => {
     }
 });
 gmailConnectScene.leave((ctx) => ctx.reply("Gmail config finished"));
-gmailConnectScene.on("message", async (ctx) => {
+gmailConnectScene.on("text", async (ctx) => {
     const user = await FindUserById(ctx.chat.id);
     if (!user) {
         ctx.reply("Error ocurred");
@@ -68,13 +66,13 @@ gmailConnectScene.on("message", async (ctx) => {
     }
 });
 
-export const stage = new Stage([gmailConnectScene]);
-stage.command("cancel", Stage.leave());
+export const stage = new Scenes.Stage([gmailConnectScene]);
+stage.command("cancel", Scenes.Stage.leave<Scenes.SceneContext>());
 
-const connectGmail: Middleware<SceneContextMessageUpdate> = async function(ctx) {
+const connectGmail: Middleware<Context> = async function(ctx) {
     const user = await checkUser(ctx);
     if (user !== false) {
-        ctx.scene.enter("connect_gmail");
+        Scenes.Stage.enter<Scenes.SceneContext>("connect_gmail");
     }
 };
 

@@ -10,6 +10,9 @@ const setChatsId: Middleware<Context> = async function(ctx) {
     if (user === false) {
         return;
     }
+    if (!("text" in ctx.message)) {
+        return;
+    }
     const lines = ctx.message.text.split(/[\r\n]+/);
     if (lines.length !== 2) {
         ctx.reply("expected two lines");

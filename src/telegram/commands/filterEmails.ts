@@ -1,5 +1,4 @@
-import { Context } from "telegraf";
-import { MiddlewareFn } from "telegraf/typings/composer";
+import { Context, MiddlewareFn } from "telegraf";
 import { SetSenderEmailsToFilterAndAction } from "@controller/user";
 import { checkUser } from "@telegram/common";
 import { BotCommand } from "telegraf/typings/telegram-types";
@@ -7,6 +6,9 @@ import { BotCommand } from "telegraf/typings/telegram-types";
 const filterEmails: MiddlewareFn<Context> = async function(ctx) {
     const user = await checkUser(ctx);
     if (user === false) {
+        return;
+    }
+    if (!("text" in ctx.message)) {
         return;
     }
     const lines = ctx.message.text.split(/[\r\n]+/);

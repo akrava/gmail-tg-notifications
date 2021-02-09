@@ -1,6 +1,5 @@
-import Telegraf from "telegraf";
+import { Telegraf, session } from "telegraf";
 import { error } from "@service/logging";
-import session from "telegraf/session";
 import startCb, { desrciption as startCommand } from "@commands/start";
 import connectGmailCb, { desrciption as connectGmailCommand } from "@commands/connectGmail";
 import setChatsId, { desrciption as setChatsIdCommand } from "@commands/setChatsId";
