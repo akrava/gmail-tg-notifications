@@ -171,10 +171,13 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
     const result = [];
     for (const mail of messagesDocuments) {
         let message = "";
+        console.log(mail.payload.parts);
         if (mail.payload.parts) {
             let data = mail.payload.parts.filter((x) => x.mimeType.includes("text/html"));
             if (data.length === 0) {
                 for (const part of mail.payload.parts) {
+                    console.log("level 1");
+                    console.log(part.parts);
                     if (part.parts) {
                         data = data.concat(part.parts.filter((x) => x.mimeType.includes("text/html")));
                     }
@@ -185,6 +188,7 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
 
             // TODO 
             if (message.trim().length === 0) {
+                console.log("level 2");
                 let data = mail.payload.parts.filter((x) => x.headers && x.headers.filter(x => x.name && x.name.includes("Content-Type") && x.value && x.value.includes("text/html")).length > 0);
                 if (data.length === 0) {
                     for (const part of mail.payload.parts) {
@@ -196,6 +200,8 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
                 message = data.reduce((prev, cur) => prev += base64ToString(cur.body.data), ""); //
                 message = htmlToText.fromString(message); //
             }
+            console.log("level 3");
+            mail.payload.parts.forEach(x => console.log(x));
             // TODO 
         }
         if (mail.payload.headers) {
