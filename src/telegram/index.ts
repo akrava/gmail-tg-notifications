@@ -31,3 +31,6 @@ bot.telegram.setMyCommands([startCommand, connectGmailCommand, setChatsIdCommand
     .catch(e => error(e));
 
 bot.catch((err: Error) => error(err));
+
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));

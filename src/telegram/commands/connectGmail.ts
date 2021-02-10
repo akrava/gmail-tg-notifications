@@ -65,9 +65,9 @@ gmailConnectScene.on("text", async (ctx) => {
         }
     }
 });
+gmailConnectScene.command("cancel", Scenes.Stage.leave<Scenes.SceneContext>());
 
-export const stage = new Scenes.Stage([gmailConnectScene]);
-stage.command("cancel", Scenes.Stage.leave<Scenes.SceneContext>());
+export const stage = new Scenes.Stage<Scenes.SceneContext>([gmailConnectScene]);
 
 const connectGmail: Middleware<Context> = async function(ctx) {
     const user = await checkUser(ctx);
