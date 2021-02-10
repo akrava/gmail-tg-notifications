@@ -4,6 +4,7 @@ import { Middleware, Scenes, Context } from "telegraf";
 import { authorizeUser, generateUrlToGetToken, getNewToken, IAuthObject } from "@gmail/index";
 import { getEmailAdress, watchMails } from "@gmail/index";
 import { BotCommand } from "telegraf/typings/telegram-types";
+import { SceneContextScene } from "telegraf/typings/scenes";
 
 const gmailConnectScene = new Scenes.BaseScene<Scenes.SceneContext>("connect_gmail");
 gmailConnectScene.enter(async (ctx) => {
@@ -69,10 +70,10 @@ gmailConnectScene.command("cancel", Scenes.Stage.leave<Scenes.SceneContext>());
 
 export const stage = new Scenes.Stage<Scenes.SceneContext>([gmailConnectScene]);
 
-const connectGmail: Middleware<Context> = async function(ctx) {
+const connectGmail: Middleware<Scenes.SceneContext> = async function(ctx) {
     const user = await checkUser(ctx);
     if (user !== false) {
-        Scenes.Stage.enter<Scenes.SceneContext>("connect_gmail");
+        ctx.scene.enter("connect_gmail");
     }
 };
 
