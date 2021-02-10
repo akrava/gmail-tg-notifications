@@ -1,4 +1,4 @@
-import { Telegraf, session } from "telegraf";
+import { Telegraf, session, Scenes } from "telegraf";
 import { error } from "@service/logging";
 import startCb, { desrciption as startCommand } from "@commands/start";
 import connectGmailCb, { desrciption as connectGmailCommand } from "@commands/connectGmail";
@@ -10,7 +10,7 @@ import deleteProfileCb, { desrciption as deleteProfileCommand } from "@commands/
 import filterEmailsCb , { desrciption as filterEmailsCommand } from "@commands/filterEmails";
 import { stage as authGmailStage } from "@commands/connectGmail";
 
-export const bot = new Telegraf(process.env.BOT_TOKEN);
+export const bot = new Telegraf<Scenes.SceneContext>(process.env.BOT_TOKEN);
 
 bot.use(session());
 bot.use(authGmailStage.middleware());
