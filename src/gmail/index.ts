@@ -203,6 +203,10 @@ export async function getEmails(emailAdress: string, historyId: number): Promise
             console.log("level 3");
             mail.payload.parts.forEach(x => console.log(x));
             // TODO 
+        } else if (mail.payload.body) {
+            console.log("level4");
+            console.log(mail.payload.body);
+            message = htmlToText.fromString(base64ToString(mail.payload.body.data || ""));
         }
         if (mail.payload.headers) {
             const date = mail.payload.headers.filter((x) => x.name === "Date");
