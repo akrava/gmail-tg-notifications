@@ -1,8 +1,7 @@
 import { Context, MiddlewareFn } from "telegraf";
 import { DeleteCredentials } from "@controller/user";
-import { checkUser } from "@telegram/common";
+import { checkUser, BotCommand } from "@telegram/common";
 import { authorizeUser, stopNotifications } from "@gmail/index";
-import { BotCommand } from "telegraf/typings/telegram-types";
 
 
 const deleteToken: MiddlewareFn<Context> = async function(ctx) {

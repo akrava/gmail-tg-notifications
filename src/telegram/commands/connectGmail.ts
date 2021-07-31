@@ -1,9 +1,8 @@
 import { FindUserById, SetEmail } from "@controller/user";
-import { checkUser } from "@telegram/common";
+import { checkUser, BotCommand } from "@telegram/common";
 import { Middleware, Scenes, Context } from "telegraf";
 import { authorizeUser, generateUrlToGetToken, getNewToken, IAuthObject } from "@gmail/index";
 import { getEmailAdress, watchMails } from "@gmail/index";
-import { BotCommand } from "telegraf/typings/telegram-types";
 import { SceneContextScene } from "telegraf/typings/scenes";
 
 const gmailConnectScene = new Scenes.BaseScene<Scenes.SceneContext>("connect_gmail");

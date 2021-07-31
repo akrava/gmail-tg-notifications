@@ -17,3 +17,8 @@ export async function checkUser(ctx: Context) {
         return user;
     }
 }
+
+export interface BotCommand {
+    description: string;
+    command: string;
+}

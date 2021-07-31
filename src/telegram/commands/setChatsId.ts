@@ -1,9 +1,8 @@
 import { bot } from "@telegram/index";
 import { Context, Middleware } from "telegraf";
 import { SetChatsId as SetChatsIdController } from "@controller/user";
-import { checkUser } from "@telegram/common";
+import { checkUser, BotCommand } from "@telegram/common";
 import { error } from "@service/logging";
-import { BotCommand } from "telegraf/typings/telegram-types";
 
 const setChatsId: Middleware<Context> = async function(ctx) {
     const user = await checkUser(ctx);

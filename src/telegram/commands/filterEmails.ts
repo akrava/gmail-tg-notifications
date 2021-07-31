@@ -1,7 +1,6 @@
 import { Context, MiddlewareFn } from "telegraf";
 import { SetSenderEmailsToFilterAndAction } from "@controller/user";
-import { checkUser } from "@telegram/common";
-import { BotCommand } from "telegraf/typings/telegram-types";
+import { checkUser, BotCommand } from "@telegram/common";
 
 const filterEmails: MiddlewareFn<Context> = async function(ctx) {
     const user = await checkUser(ctx);

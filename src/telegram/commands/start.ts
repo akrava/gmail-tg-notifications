@@ -1,6 +1,6 @@
 import { CreateUser, FindUserById } from "@controller/user";
 import { Middleware, Context } from "telegraf";
-import { BotCommand } from "telegraf/typings/telegram-types";
+import { BotCommand } from "@telegram/common";
 
 const start: Middleware<Context> = async function(ctx) {
     if (ctx.chat.type === "private") {
