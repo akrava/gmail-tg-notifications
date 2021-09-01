@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import { OAuth2Client } from "google-auth-library";
 import { error, info } from "@service/logging";
 import { getEmails, IMailObject, authorizeUser, watchMails } from "@gmail/index";
-import { FindUserByEmail, FindAll } from "@controller/user";
+import { FindUserByEmail, FindAll, SetChatsId } from "@controller/user";
 import { bot } from "@telegram/index";
 import { getValue, setValue, isValueSet } from "@server/serverMap";
 
@@ -77,7 +77,28 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
                             );
                         });
                     } catch (err) {
-                        console.log("error with sending")
+                        try {
+                            try {
+                                const temp = await bot.telegram.getChat(chatId);
+                                const botID = (await bot.telegram.getMe()).id;
+                                let needToDel = false;
+                                if (temp.type !== "private") {
+                                    needToDel = true;
+                                    const admins = await bot.telegram.getChatAdministrators(chatId);
+                                    const isUserAdmin = admins.some((y) => y.user.id === user.telegramID);
+                                    const isBotAdmin = admins.some((y) => y.user.id === botID);
+                                    if (isBotAdmin && isUserAdmin) {
+                                        needToDel = false;
+                                    }
+                                }
+                            } catch (e) {
+                                await SetChatsId(user.telegramID, user.chatsId.filter(i => i != chatId));
+                                console.log("deleted chatID");
+                            }
+                        } catch (e) {
+                            console.log("error while deleting caht id");
+                        }
+                        console.log("error with sending, deleted chat id");
                         // console.log(err);
                     }
                 }
