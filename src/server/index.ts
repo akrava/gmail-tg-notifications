@@ -1,7 +1,7 @@
 import Express, { Request, Response, NextFunction } from "express";
 import { bot } from "@telegram/index";
 import rateLimit from "express-rate-limit";
-import mongoSanitize from "express-mongo-sanitize";
+// import mongoSanitize from "express-mongo-sanitize";
 import { router as gmailRouter } from "@gmail/index";
 
 export const app = Express();
@@ -15,7 +15,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 
 app.use(bot.webhookCallback(process.env.WEBHOOK_TG_PATH));
 

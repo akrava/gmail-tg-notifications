@@ -1,6 +1,6 @@
 import Express, { Application } from "express";
 import bodyParser from "body-parser";
-import mongoSanitize from "express-mongo-sanitize";
+// import mongoSanitize from "express-mongo-sanitize";
 import { OAuth2Client } from "google-auth-library";
 import { error, info } from "@service/logging";
 import { getEmails, IMailObject, authorizeUser, watchMails } from "@gmail/index";
@@ -27,9 +27,12 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
     }
     const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
     const obj = JSON.parse(message);
-    const emailAddress = (mongoSanitize.sanitize(obj.emailAddress) as string)
+    // const emailAddress = (mongoSanitize.sanitize(obj.emailAddress) as string)
+    //     .toLowerCase().trim();
+    const emailAddress = (obj.emailAddress as string)
         .toLowerCase().trim();
-    const historyId = mongoSanitize.sanitize(obj.historyId);
+    // const historyId = mongoSanitize.sanitize(obj.historyId);
+    const historyId = obj.historyId;
     const app = req.app;
     if (!addGmailUserWithHistoryId(app, emailAddress, historyId)) {
         info("This update was skipped due to it has been already processed");
