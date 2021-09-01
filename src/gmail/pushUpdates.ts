@@ -13,79 +13,81 @@ const authClient = new OAuth2Client();
 export const router = Express.Router();
 
 router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
-    try {
-        const bearer = req.header("Authorization");
-        const [, token] = bearer.match(/Bearer (.*)/);
-        await authClient.verifyIdToken({
-            idToken: token,
-            audience: process.env.SERVER_PATH.replace(/https?:\/\/|\//g, ""),
-        });
-    } catch (e) {
-        error(e);
-        res.status(400).send("Invalid token");
-        return;
-    }
-    const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
-    const obj = JSON.parse(message);
-    // const emailAddress = (mongoSanitize.sanitize(obj.emailAddress) as string)
-    //     .toLowerCase().trim();
-    const emailAddress = (obj.emailAddress as string)
-        .toLowerCase().trim();
-    // const historyId = mongoSanitize.sanitize(obj.historyId);
-    const historyId = obj.historyId;
-    const app = req.app;
-    if (!addGmailUserWithHistoryId(app, emailAddress, historyId)) {
-        info("This update was skipped due to it has been already processed");
-        res.status(204).send();
-        return;
-    }
-    const user = await FindUserByEmail(emailAddress);
-    if (user) {
-        let response: false | IMailObject[];
-        try {
-            response = await getEmails(emailAddress, historyId);
-            if (response === false) {
-                throw new Error();
-            }
-        } catch (e) {
-            error(e);
-            res.status(204).send();
-            return;
-        }
-        for (const chatId of user.chatsId) {
-            for (const x of response) {
-                if (!x.message) {
-                    error(new Error("empty message"));
-                    continue;
-                } else {
-                    if (x.message.length > 3500) {
-                        // TODO send several messages
-                        x.message = x.message.substr(0, 3500);
-                        x.message = x.message + "\nMessage exceed max length";
-                    }
-                    try {
-                        const sent = await bot.telegram.sendMessage(
-                            chatId,
-                            x.message,
-                            { disable_web_page_preview: true }
-                        );
-                        x.attachments.forEach((y) => {
-                            bot.telegram.sendDocument(
-                                chatId,
-                                { filename: y.name, source: y.data },
-                                { reply_to_message_id: sent.message_id }
-                            );
-                        });
-                    } catch (err) {
-                        console.log("error with sending")
-                        // console.log(err);
-                    }
-                }
-            }
-        }
-    }
     res.status(204).send();
-    cleanGmailHistoryIdMap(app);
+    return;
+    // try {
+    //     const bearer = req.header("Authorization");
+    //     const [, token] = bearer.match(/Bearer (.*)/);
+    //     await authClient.verifyIdToken({
+    //         idToken: token,
+    //         audience: process.env.SERVER_PATH.replace(/https?:\/\/|\//g, ""),
+    //     });
+    // } catch (e) {
+    //     error(e);
+    //     res.status(400).send("Invalid token");
+    //     return;
+    // }
+    // const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
+    // const obj = JSON.parse(message);
+    // // const emailAddress = (mongoSanitize.sanitize(obj.emailAddress) as string)
+    // //     .toLowerCase().trim();
+    // const emailAddress = (obj.emailAddress as string)
+    //     .toLowerCase().trim();
+    // // const historyId = mongoSanitize.sanitize(obj.historyId);
+    // const historyId = obj.historyId;
+    // const app = req.app;
+    // if (!addGmailUserWithHistoryId(app, emailAddress, historyId)) {
+    //     info("This update was skipped due to it has been already processed");
+    //     res.status(204).send();
+    //     return;
+    // }
+    // const user = await FindUserByEmail(emailAddress);
+    // if (user) {
+    //     let response: false | IMailObject[];
+    //     try {
+    //         response = await getEmails(emailAddress, historyId);
+    //         if (response === false) {
+    //             throw new Error();
+    //         }
+    //     } catch (e) {
+    //         error(e);
+    //         res.status(204).send();
+    //         return;
+    //     }
+    //     for (const chatId of user.chatsId) {
+    //         for (const x of response) {
+    //             if (!x.message) {
+    //                 error(new Error("empty message"));
+    //                 continue;
+    //             } else {
+    //                 if (x.message.length > 3500) {
+    //                     // TODO send several messages
+    //                     x.message = x.message.substr(0, 3500);
+    //                     x.message = x.message + "\nMessage exceed max length";
+    //                 }
+    //                 try {
+    //                     const sent = await bot.telegram.sendMessage(
+    //                         chatId,
+    //                         x.message,
+    //                         { disable_web_page_preview: true }
+    //                     );
+    //                     x.attachments.forEach((y) => {
+    //                         bot.telegram.sendDocument(
+    //                             chatId,
+    //                             { filename: y.name, source: y.data },
+    //                             { reply_to_message_id: sent.message_id }
+    //                         );
+    //                     });
+    //                 } catch (err) {
+    //                     console.log("error with sending")
+    //                     // console.log(err);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // res.status(204).send();
+    // cleanGmailHistoryIdMap(app);
 });
 
 router.get(process.env.UPDATE_PUB_SUB_TOPIC_PATH, async (_req, res) => {
