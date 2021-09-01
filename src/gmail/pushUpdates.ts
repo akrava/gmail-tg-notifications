@@ -63,18 +63,22 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
                         x.message = x.message.substr(0, 3500);
                         x.message = x.message + "\nMessage exceed max length";
                     }
-                    const sent = await bot.telegram.sendMessage(
-                        chatId,
-                        x.message,
-                        { disable_web_page_preview: true }
-                    );
-                    x.attachments.forEach((y) => {
-                        bot.telegram.sendDocument(
+                    try {
+                        const sent = await bot.telegram.sendMessage(
                             chatId,
-                            { filename: y.name, source: y.data },
-                            { reply_to_message_id: sent.message_id }
+                            x.message,
+                            { disable_web_page_preview: true }
                         );
-                    });
+                        x.attachments.forEach((y) => {
+                            bot.telegram.sendDocument(
+                                chatId,
+                                { filename: y.name, source: y.data },
+                                { reply_to_message_id: sent.message_id }
+                            );
+                        });
+                    } catch (err) {
+                        console.log(err);
+                    }
                 }
             }
         }
