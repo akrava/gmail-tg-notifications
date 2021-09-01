@@ -77,7 +77,8 @@ router.post(process.env.GAPPS_PUSH_PATH, jsonBodyParser, async (req, res) => {
                             );
                         });
                     } catch (err) {
-                        console.log(err);
+                        console.log("error with sending")
+                        // console.log(err);
                     }
                 }
             }
